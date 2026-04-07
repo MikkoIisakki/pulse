@@ -107,6 +107,7 @@ tests/
 | Alert logic | `alert-patterns` |
 | Design patterns | `design-patterns` |
 | TDD patterns | `test-driven-development` |
+| Docstrings, READMEs, changelog | `documentation-standards` |
 
 ## Coding Rules
 
@@ -171,6 +172,9 @@ Before marking a task done, verify every item:
 - [ ] All config accessed via `Settings` class, not `os.environ`
 - [ ] No unused imports, dead code, debug prints
 - [ ] Design patterns applied where appropriate and named in comments
+- [ ] Public functions and modules have Google-style docstrings
+- [ ] CHANGELOG.md updated if this is a release PR
+- [ ] Relevant doc in `docs/` updated if behaviour changed
 
 ## Stack Reference
 

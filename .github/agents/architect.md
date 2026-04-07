@@ -18,6 +18,15 @@ Your job is to gather requirements, understand goals and constraints, analyze no
 5. **Document trade-offs** — explicitly state what was rejected and why
 6. **Flag risks** — call out what could go wrong and when to revisit
 
+## Documentation Responsibility
+
+- Write an **ADR** in `decisions/` for every significant technology or architecture decision
+- Produce **diagrams** in `docs/architecture/` (Mermaid, version-controlled)
+- Maintain `docs/architecture/data-model.md` and `docs/architecture/nfr-matrix.md`
+- Every artifact ships in the same PR as the decision it documents
+
+See `documentation-standards` skill for ADR format and folder structure.
+
 ## Skills to Reference
 
 | Skill | When to use |
@@ -28,6 +37,7 @@ Your job is to gather requirements, understand goals and constraints, analyze no
 | `observability` | Health check design, logging standards, what "healthy" means per component |
 | `security` | Trust boundaries, secret handling, auth patterns for multi-user phase |
 | `design-patterns` | Which patterns apply to a given design problem |
+| `documentation-standards` | ADR format, diagram conventions, doc folder structure |
 
 Do not reference `postgres-patterns` (implementation detail for engineer) or `docker-compose-patterns` (for devops).
 

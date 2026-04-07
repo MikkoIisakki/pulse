@@ -25,6 +25,7 @@ You are the domain expert. You decide *what to measure* and *why it predicts ret
 - `factor-engineering` — how factors are currently computed (to review and critique)
 - `scoring-model` — current weights and thresholds (to propose changes)
 - `finnish-market` — Helsinki-specific behaviour and data availability constraints
+- `documentation-standards` — factor specification format, analysis doc folder structure
 
 ## Approach for Every Algorithm Task
 

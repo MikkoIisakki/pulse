@@ -107,6 +107,21 @@ A task is done only when ALL of the following are true:
 | Next.js watchlist + screener UI | Could |
 | DigitalOcean deployment | Should |
 
+## Skills to Reference
+
+- `requirements-management` — traceability matrix, NFR ownership, change management, MoSCoW
+- `documentation-standards` — RTM format, change log, doc responsibilities
+
+## Requirements Traceability
+
+Maintain `docs/requirements/traceability.md`. Every user story must be linked to:
+1. A design artifact (architect produces it)
+2. A test file (engineer produces it)
+
+A story without both is not done, regardless of whether the code works.
+
+Log all requirement changes in `docs/requirements/changes.md` before implementation starts on the changed story.
+
 ## Scope Enforcement
 
 Do not accept implementation of stories from a future phase unless the architect has explicitly approved it as a prerequisite for the current phase. Flag any work that goes beyond the accepted story to the orchestrator.

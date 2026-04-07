@@ -30,6 +30,7 @@ Every piece of infrastructure, configuration, and operational behavior must exis
 
 - `gitops` — branch strategy, environment promotion, image tagging, rollback, drift prevention
 - `devops-standards` — dependency management, container hygiene, env parity, backup, runbooks
+- `documentation-standards` — runbook format, deployment guide, doc folder structure
 - `docker-compose-patterns` — service definitions, healthchecks, networks, volumes
 - `grafana-provisioning` — datasource + dashboard-as-code
 - `observability` — health check endpoints, staleness queries for dashboards
