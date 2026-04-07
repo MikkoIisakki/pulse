@@ -21,6 +21,7 @@ All tools run in CI. A PR cannot merge if any gate fails.
 | `gitleaks` | Secret scanning in git history | `.gitleaks.toml` | ✓ fail on any secret |
 | `trivy` | Docker image CVE scanning | inline in GHA | ✓ fail on CRITICAL/HIGH |
 | `pip-audit` | Python dependency vulnerability check | inline in GHA | ✓ fail on known CVEs |
+| `pip-licenses` | Dependency license compatibility check | inline in GHA | ✓ fail on GPL/AGPL/SSPL |
 
 ---
 
@@ -103,6 +104,9 @@ pytest tests/ -q
 
 # Dependency vulnerabilities
 pip-audit -r backend/requirements.txt
+
+# Dependency license check
+pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
 
 # Secret scan (requires gitleaks installed)
 gitleaks detect --source .
@@ -230,6 +234,11 @@ await conn.execute("SELECT * FROM asset WHERE symbol = $1", symbol)
 
 - name: Dependency audit
   run: pip-audit -r backend/requirements.txt
+
+- name: License audit
+  run: |
+    pip install pip-licenses
+    pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
 
 - name: Secret scan
   uses: gitleaks/gitleaks-action@v2

@@ -319,4 +319,35 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 **Review trigger**: Phase B deployment — confirm Managed PostgreSQL is active before going live.
 
 ---
+
+### RISK-012: Data source Terms of Service violation
+
+| Field | Value |
+|---|---|
+| Category | Operational / Legal |
+| Likelihood | 3 |
+| Impact | 3 |
+| Score | 9 |
+| Level | Medium |
+| Status | Accepted (personal use) → Open (SaaS) |
+| Owner | devops, analyst |
+
+**Description**: yfinance scrapes Yahoo Finance without authorization. Yahoo Finance's Terms of Service prohibit scraping and commercial use of their data. Alpha Vantage and Finnhub's free tier ToS restrict redistribution and commercial use of raw data. FRED data is public domain but derived data redistribution is unrestricted only for non-commercial use.
+
+**Consequences**:
+- Personal use: account blocking, IP ban, or legal notice from Yahoo (low probability, low severity)
+- SaaS use: cease-and-desist, injunction, or data provider termination — could end the service
+
+**Mitigation**:
+- Personal use: accepted. Risk is low — Yahoo Finance does not actively pursue individual scrapers
+- yfinance raw data is never exposed directly; only derived scores and signals are surfaced
+- `raw_source_snapshot` stores data for internal audit only, not for redistribution
+- Data source abstraction (`ingestion/`) makes replacement feasible if ToS enforcement occurs
+- Alpha Vantage premium tier and Polygon.io both offer redistribution-permissive licenses for SaaS
+
+**Contingency**: If ToS enforcement occurs, switch ingestion to a compliant provider (Polygon.io, Tiingo, Alpha Vantage premium). Storage and scoring layers are unaffected.
+
+**Review trigger**: Any decision to move to multi-user SaaS (Phase 4). At that point, legal review of all data source ToS is mandatory before launch.
+
+---
 *Add new risks as they are identified. Re-score existing risks at each phase boundary.*

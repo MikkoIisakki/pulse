@@ -242,6 +242,29 @@ Weights are **proposals** — the backtest module must validate them once 6+ mon
 - Finnish market is more cyclical and export-driven (paper, machinery, telecom, energy) — sector context matters more than in the diversified US market
 - Helsinki closes at 18:30 EET, 2.5h after US opens — intraday US market moves can preview FI open direction
 
+## Legal and Regulatory Constraints
+
+### Investment Advice Disclaimer
+
+The output of this system — scores, rankings, and alerts — is **not investment advice**. It is a quantitative screening tool that surfaces stocks matching a defined set of criteria.
+
+This distinction matters legally:
+
+- In the EU (MiFID II) and Finland (Finanssivalvonta / FIN-FSA), providing personalised investment advice as a service requires authorisation. The system must never be framed as giving advice.
+- All output should be framed as: *"This stock matches your screening criteria"*, not *"You should buy this stock"*
+- Any future UI copy, API response labels, or documentation must avoid the words *"advice"*, *"recommend"* (use *"screen"*, *"rank"*, *"score"*), and *"should buy"*
+
+**Enforced at every phase**: If any output artifact, UI label, or API field name implies a buy/sell directive, the analyst must flag it for correction before it ships.
+
+### SaaS Phase Gate
+
+Before any multi-user deployment (Phase 4), a legal review is required covering:
+1. Data source ToS compliance (see RISK-012)
+2. MiFID II / FIN-FSA applicability for the specific feature set
+3. GDPR compliance for user data
+
+The analyst must not design features for Phase 4 that assume these reviews have passed.
+
 ## What You Do NOT Do
 
 - Write Python, SQL, or configuration files
