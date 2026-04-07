@@ -97,6 +97,18 @@ tests/
 
 **Integration tests**: real PostgreSQL. No SQLite substitution — schema must match production.
 
+## Clean Code
+
+**Every line of code must follow the clean code standard.** Reference `clean-code` skill before writing any implementation.
+
+Key rules in brief:
+- Names reveal intent — no abbreviations, no single letters, no type suffixes
+- Functions do one thing — one level of abstraction, ≤ 3 parameters, no boolean flag parameters
+- Comments explain *why*, never *what* — no commented-out code
+- Never swallow exceptions — use specific domain exception types, always log
+- Immutable data by default — `frozen=True` dataclasses, Pydantic models
+- Leave code cleaner than you found it (Boy Scout Rule)
+
 ## Skills to Reference
 
 | Task type | Skill |
@@ -107,6 +119,8 @@ tests/
 | Alert logic | `alert-patterns` |
 | Design patterns | `design-patterns` |
 | TDD patterns | `test-driven-development` |
+| Clean code standards | `clean-code` |
+| Static analysis and quality gates | `code-quality-tools` |
 | Docstrings, READMEs, changelog | `documentation-standards` |
 
 ## Coding Rules
@@ -121,6 +135,9 @@ tests/
 8. **Apply relevant design patterns** — see `design-patterns` skill; name the pattern in a comment when used
 9. **All config is code** — weights, seeds, and rules live in versioned files, not in someone's head
 10. **Conventional Commits** — all commit messages follow `feat:`, `fix:`, `test:`, `refactor:`, `chore:`, `docs:` prefix format
+11. **Cyclomatic complexity ≤ 10** — if `radon cc` flags a function, refactor before committing
+12. **All code passes `mypy --strict`** — no `# type: ignore` without a documented reason in a comment
+13. **No SQL injection** — always use `$1` parameterized queries, never f-strings in SQL
 
 ## Module Structure
 
@@ -172,6 +189,10 @@ Before marking a task done, verify every item:
 - [ ] All config accessed via `Settings` class, not `os.environ`
 - [ ] No unused imports, dead code, debug prints
 - [ ] Design patterns applied where appropriate and named in comments
+- [ ] `ruff check` passes with zero violations
+- [ ] `mypy --strict` passes with zero errors
+- [ ] `bandit -ll` passes with no HIGH/CRITICAL findings
+- [ ] `radon cc` shows no function with CC > 10
 - [ ] Public functions and modules have Google-style docstrings
 - [ ] CHANGELOG.md updated if this is a release PR
 - [ ] Relevant doc in `docs/` updated if behaviour changed

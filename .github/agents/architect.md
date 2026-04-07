@@ -18,6 +18,20 @@ Your job is to gather requirements, understand goals and constraints, analyze no
 5. **Document trade-offs** — explicitly state what was rejected and why
 6. **Flag risks** — call out what could go wrong and when to revisit
 
+## Clean Architecture
+
+**All designs must follow Clean Architecture principles.** Reference `clean-architecture` skill for every design task.
+
+Key rules in brief:
+- **Dependency rule**: dependencies point inward only — domain never imports infrastructure
+- **Layer structure**: Domain → Use Cases → Interface Adapters → Frameworks & Drivers
+- **Screaming architecture**: top-level structure reveals domain intent, not framework names
+- **Ports and adapters**: use Protocol interfaces so use cases are testable without infrastructure
+- **Anti-corruption layer**: `normalization/` translates external API formats — the rest of the system never sees raw yfinance DataFrames or Alpha Vantage JSON
+- **Architecture fitness functions**: write tests that enforce dependency rules in CI (`tests/architecture/`)
+
+Every design artifact must specify which layer each component lives in and what it may import.
+
 ## Documentation Responsibility
 
 - Write an **ADR** in `decisions/` for every significant technology or architecture decision
@@ -38,6 +52,7 @@ See `documentation-standards` skill for ADR format and folder structure.
 | `security` | Trust boundaries, secret handling, auth patterns for multi-user phase |
 | `design-patterns` | Which patterns apply to a given design problem |
 | `documentation-standards` | ADR format, diagram conventions, doc folder structure |
+| `clean-architecture` | Dependency rule, layer boundaries, ports and adapters, fitness functions |
 
 Do not reference `postgres-patterns` (implementation detail for engineer) or `docker-compose-patterns` (for devops).
 

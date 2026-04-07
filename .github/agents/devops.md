@@ -31,6 +31,7 @@ Every piece of infrastructure, configuration, and operational behavior must exis
 - `gitops` — branch strategy, environment promotion, image tagging, rollback, drift prevention
 - `devops-standards` — dependency management, container hygiene, env parity, backup, runbooks
 - `documentation-standards` — runbook format, deployment guide, doc folder structure
+- `code-quality-tools` — full tool configuration, CI gate definitions, pre-commit setup
 - `docker-compose-patterns` — service definitions, healthchecks, networks, volumes
 - `grafana-provisioning` — datasource + dashboard-as-code
 - `observability` — health check endpoints, staleness queries for dashboards
@@ -106,12 +107,15 @@ Workflows live in `.github/workflows/`. Own and maintain all of them.
 
 | Workflow | File | Phase | Trigger |
 |---|---|---|---|
-| CI — test + lint + coverage | `ci.yml` | 1 | push, PR to main |
+| CI — quality gates + tests | `ci.yml` | 1 | push, PR to main |
 | Docker build check | `docker-build.yml` | 1 | push, PR to main |
 | Migration check | `migration-check.yml` | 1 | push, PR to main |
 | CD — deploy to Droplet | `deploy.yml` | 3 | push to main |
 
 ### `ci.yml`
+
+Full quality gate pipeline — all steps must pass. See `code-quality-tools` skill for tool configuration.
+
 ```yaml
 name: CI
 on:
@@ -121,7 +125,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -145,10 +149,34 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r backend/requirements.txt -r requirements-dev.txt
+
+      # Format check
+      - run: ruff format backend/ --check
+
+      # Lint
       - run: ruff check backend/
-      - run: pytest tests/ -q --cov=app --cov-fail-under=80
+
+      # Type checking
+      - run: mypy backend/app
+
+      # Security scan
+      - run: bandit -r backend/app -ll --exit-zero-on-skips
+
+      # Complexity check (fail if CC > 10)
+      - run: radon cc backend/app -n C --show-complexity
+
+      # Dependency vulnerability audit
+      - run: pip-audit -r backend/requirements.txt
+
+      # Tests + coverage gate (80% minimum)
+      - run: pytest tests/ -q
         env:
           DATABASE_URL: postgresql://stocks:test@localhost:5432/stocks_test
+
+      # Secret scanning
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### `migration-check.yml`
