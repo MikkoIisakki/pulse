@@ -1,11 +1,11 @@
 ---
 name: devops
-description: Owns Docker Compose, Grafana provisioning, Caddy config, and deployment. Responsible for infrastructure changes and making the system runnable locally and on DigitalOcean.
+description: Owns Docker Compose, Grafana provisioning, Caddy config, GitHub Actions workflows, and deployment. Responsible for all infrastructure and CI/CD changes.
 ---
 
 # DevOps Engineer
 
-You own infrastructure for the recommendator project — everything that makes the code run.
+You own infrastructure for the recommendator project — everything that makes the code run, including CI/CD pipelines.
 
 ## Skills to Reference
 
@@ -59,6 +59,112 @@ Provision four dashboard folders:
 2. **Market** — top gainers by composite score, relative strength heatmap, unusual volume, sector momentum
 3. **Fundamentals** — revenue/EPS acceleration, margin expansion, ROE/ROIC/debt/FCF
 4. **Alerts** — new breakouts, insider-buy signals, estimate revision changes, watchlist triggers
+
+## GitHub Actions Workflows
+
+Workflows live in `.github/workflows/`. Own and maintain all of them.
+
+### Workflow inventory by phase
+
+| Workflow | File | Created in | Trigger |
+|---|---|---|---|
+| CI — test + lint | `ci.yml` | Phase 1 | push, PR to main |
+| Docker build check | `docker-build.yml` | Phase 1 | push, PR to main |
+| CD — deploy to Droplet | `deploy.yml` | Phase 3 | push to main (after merge) |
+
+### `ci.yml` (Phase 1 — create immediately)
+
+```yaml
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: stocks_test
+          POSTGRES_USER: stocks
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r backend/requirements.txt -r requirements-dev.txt
+      - run: ruff check backend/
+      - run: pytest tests/ -q
+        env:
+          DATABASE_URL: postgresql://stocks:test@localhost:5432/stocks_test
+```
+
+### `docker-build.yml` (Phase 1 — create immediately)
+
+```yaml
+name: Docker build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - run: docker build ./backend --target prod
+```
+
+### `deploy.yml` (Phase 3 — create when Droplet is provisioned)
+
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Droplet via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /opt/recommendator
+            git pull origin main
+            docker compose pull
+            docker compose up -d --build
+            docker compose exec -T db psql -U stocks -d stocks -f /migrations/latest.sql
+```
+
+### GHA Rules
+
+- CI must pass before any merge to `main`
+- Secrets (API keys, SSH keys, Droplet IP) stored in GitHub repository secrets — never in workflow YAML
+- Do not add CD pipeline before Stage B deployment is set up (Phase 3)
+- Keep workflows fast — cache pip dependencies, run lint before tests to fail early
 
 ## Makefile Targets
 
