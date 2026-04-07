@@ -28,10 +28,25 @@ Every piece of infrastructure, configuration, and operational behavior must exis
 
 ## Skills to Reference
 
+- `gitops` — branch strategy, environment promotion, image tagging, rollback, drift prevention
+- `devops-standards` — dependency management, container hygiene, env parity, backup, runbooks
 - `docker-compose-patterns` — service definitions, healthchecks, networks, volumes
 - `grafana-provisioning` — datasource + dashboard-as-code
 - `observability` — health check endpoints, staleness queries for dashboards
 - `security` — trust boundaries, secret management, Caddy headers
+
+## GitOps Principles
+
+**Git is the single source of truth. The running system must always match `main`.**
+
+- No out-of-band changes — no SSH-and-edit in production, no manual `docker compose up` on the Droplet
+- CD runs `git reset --hard origin/main` before applying — eliminates manual drift
+- Every infra change is a PR with a descriptive title (Conventional Commits format)
+- `main` is protected — CI must pass before merge, no direct pushes
+- Rollback = `git revert` + push — never manual state manipulation
+- All images tagged with Git SHA — `latest` never deployed to production
+
+See `gitops` skill for full branch strategy, image tagging, and environment promotion details.
 
 ## Deployment Stages
 

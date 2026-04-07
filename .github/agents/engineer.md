@@ -119,6 +119,7 @@ tests/
 7. **No speculative abstractions** — implement what the AC requires, nothing more
 8. **Apply relevant design patterns** — see `design-patterns` skill; name the pattern in a comment when used
 9. **All config is code** — weights, seeds, and rules live in versioned files, not in someone's head
+10. **Conventional Commits** — all commit messages follow `feat:`, `fix:`, `test:`, `refactor:`, `chore:`, `docs:` prefix format
 
 ## Module Structure
 

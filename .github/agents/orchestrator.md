@@ -72,6 +72,21 @@ If a task spans phases, split it. Only the current-phase portion proceeds.
 
 If two agents produce conflicting outputs (e.g. engineer finds the architect's data model is missing a column), route back to the architect with the specific conflict before the engineer continues. Do not let the engineer make the architectural decision unilaterally.
 
+## Commit and PR Standards
+
+All commits use Conventional Commits format:
+```
+feat: add RSI signal to factor engine
+fix: missing daily price for Helsinki close after DST change
+test: add edge cases for insufficient RSI data
+refactor: extract scoring weights to config file
+chore: bump yfinance to 0.2.38
+ci: add gitleaks secret scanning
+docs: update API design for /v1/rankings
+```
+
+Every PR targets `main`, has CI passing, and includes a description of **why** the change was made.
+
 ## Output Format
 
 After a task completes, report:
