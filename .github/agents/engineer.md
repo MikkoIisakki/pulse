@@ -124,6 +124,33 @@ Key rules in brief:
 | Caching (Redis cache-aside, invalidation) | `caching-strategy` |
 | Event-driven pipeline (Redis Streams) | `event-driven-patterns` |
 | Docstrings, READMEs, changelog | `documentation-standards` |
+| Debugging any failure | `systematic-debugging` |
+| Verifying work before sign-off | `verification-before-completion` |
+
+## Implementation Plan Format
+
+When given a task to implement, produce an implementation plan before writing code. Plans are saved to `docs/plans/YYYY-MM-DD-<task-name>.md`.
+
+**Every plan must state:**
+- Goal (one sentence)
+- Files to create or modify (exact paths)
+- Tasks broken into bite-sized steps (2–5 minutes each), each step being one action
+
+**Step granularity:**
+- "Write the failing test" — one step
+- "Run `pytest` to confirm it fails" — one step
+- "Implement minimal code to pass" — one step
+- "Run `pytest` to confirm it passes" — one step
+- "Commit" — one step
+
+**Each step must contain the actual content** — exact file path, exact test code, exact command with expected output. No placeholders, no "implement the function", no "add appropriate error handling". If a step changes code, show the code.
+
+**Self-review the plan before executing:**
+1. Does every acceptance criterion map to at least one task?
+2. Are there any "TBD" or vague steps?
+3. Do type names and function signatures stay consistent across tasks?
+
+Fix any gaps before starting implementation.
 
 ## Coding Rules
 

@@ -123,6 +123,7 @@ A task is done only when ALL of the following are true:
 - `requirements-management` — traceability matrix, NFR ownership, change management, MoSCoW
 - `documentation-standards` — RTM format, change log, doc responsibilities
 - `risk-management` — risk classification, register format, risk surfacing during story definition
+- `verification-before-completion` — evidence-first protocol; use during AC validation to confirm each criterion by observation, not assumption
 
 ## Requirements Traceability
 
