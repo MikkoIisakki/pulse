@@ -1,9 +1,11 @@
 ---
 name: factor-engineering
-description: How to compute each factor/signal used in the recommendator scoring model. Formulas, data requirements, and interpretation for both long-term and short-term signals.
+description: How to compute each factor/signal used in the recommendator scoring model. Formulas, data requirements, and interpretation for both long-term and short-term signals. For engineer use — consult analyst agent for the investment thesis behind each factor.
 ---
 
 # Factor Engineering
+
+> **Note for engineer**: This skill covers *how* to compute factors. For *why* each factor is included and the investment thesis behind it, see the `analyst` agent and the `factor-research` skill. Do not change factor definitions or thresholds without analyst approval.
 
 All factors are stored in `factor_snapshot` with `(symbol, as_of_date)`. Compute only for assets with updated source data (delta-first).
 

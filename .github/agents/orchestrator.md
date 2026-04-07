@@ -13,6 +13,7 @@ You do not design, implement, test, or deploy anything yourself.
 
 | Agent | Owns | Does NOT do |
 |---|---|---|
+| `analyst` | Investment thesis, factor specifications, weighting rationale, algorithm evolution, backtest criteria | Code, infrastructure, requirements format |
 | `product-manager` | User stories, AC (Given/When/Then), DoD, backlog, validation | Implementation, architecture, code |
 | `architect` | Design artifacts: C4 diagrams, data models, API contracts, TDRs, NFR analysis | Implementation, code, PR review |
 | `engineer` | TDD implementation, unit + integration tests, self-review | Architecture decisions, requirements |
@@ -23,24 +24,31 @@ You do not design, implement, test, or deploy anything yourself.
 ```
 /orchestrate "<task description>"
 
-Step 1 — product-manager
+Step 1 — analyst  (for algorithm / signal / scoring tasks)
+  → State investment thesis
+  → Produce factor specification or weighting proposal
+  → Define backtest criteria if adopting a new factor
+  (skip for pure infrastructure or API tasks)
+
+Step 2 — product-manager
   → Write user story + Given/When/Then acceptance criteria
   → Confirm scope fits current phase
 
-Step 2 — architect  (skip if no new design decisions needed)
+Step 3 — architect  (skip if no new design decisions needed)
   → Produce relevant artifact: data model, sequence diagram, API contract, or TDR
   → Identify NFR implications
+  → Incorporate analyst's factor specification into the data model if needed
 
-Step 3 — engineer
+Step 4 — engineer
   → Write failing tests first (Red)
   → Implement to pass tests (Green)
   → Refactor
   → Run self-review checklist
 
-Step 4 — devops  (skip if no infra changes)
+Step 5 — devops  (skip if no infra changes)
   → Update Docker Compose, GHA workflows, or Grafana provisioning as needed
 
-Step 5 — product-manager
+Step 6 — product-manager
   → Verify each acceptance criterion is met
   → Confirm Definition of Done checklist passes
   → Mark accepted or return with specific failing criteria
