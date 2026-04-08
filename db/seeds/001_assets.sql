@@ -1,0 +1,87 @@
+-- Seed: 001_assets
+-- Description: Initial asset universe — US (top S&P 500 + Nasdaq tech) and Finnish (Helsinki) tickers
+-- Symbols match yfinance conventions: plain ticker for US, TICKER.HE for Helsinki
+
+BEGIN;
+
+INSERT INTO asset (symbol, name, exchange, market, currency) VALUES
+-- ─── US — S&P 500 top holdings ──────────────────────────────────────────────
+('AAPL',  'Apple Inc.',                               'NASDAQ', 'US', 'USD'),
+('MSFT',  'Microsoft Corporation',                    'NASDAQ', 'US', 'USD'),
+('NVDA',  'NVIDIA Corporation',                       'NASDAQ', 'US', 'USD'),
+('AMZN',  'Amazon.com Inc.',                          'NASDAQ', 'US', 'USD'),
+('GOOGL', 'Alphabet Inc. Class A',                    'NASDAQ', 'US', 'USD'),
+('META',  'Meta Platforms Inc.',                      'NASDAQ', 'US', 'USD'),
+('TSLA',  'Tesla Inc.',                               'NASDAQ', 'US', 'USD'),
+('LLY',   'Eli Lilly and Company',                    'NYSE',   'US', 'USD'),
+('JPM',   'JPMorgan Chase & Co.',                     'NYSE',   'US', 'USD'),
+('V',     'Visa Inc.',                                'NYSE',   'US', 'USD'),
+('XOM',   'Exxon Mobil Corporation',                  'NYSE',   'US', 'USD'),
+('UNH',   'UnitedHealth Group Inc.',                  'NYSE',   'US', 'USD'),
+('MA',    'Mastercard Incorporated',                  'NYSE',   'US', 'USD'),
+('JNJ',   'Johnson & Johnson',                        'NYSE',   'US', 'USD'),
+('PG',    'Procter & Gamble Co.',                     'NYSE',   'US', 'USD'),
+('AVGO',  'Broadcom Inc.',                            'NASDAQ', 'US', 'USD'),
+('MRK',   'Merck & Co. Inc.',                         'NYSE',   'US', 'USD'),
+('HD',    'The Home Depot Inc.',                      'NYSE',   'US', 'USD'),
+('COST',  'Costco Wholesale Corporation',             'NASDAQ', 'US', 'USD'),
+('ABBV',  'AbbVie Inc.',                              'NYSE',   'US', 'USD'),
+('CVX',   'Chevron Corporation',                      'NYSE',   'US', 'USD'),
+('WMT',   'Walmart Inc.',                             'NYSE',   'US', 'USD'),
+('BAC',   'Bank of America Corporation',              'NYSE',   'US', 'USD'),
+('KO',    'The Coca-Cola Company',                    'NYSE',   'US', 'USD'),
+('PEP',   'PepsiCo Inc.',                             'NASDAQ', 'US', 'USD'),
+('TMO',   'Thermo Fisher Scientific Inc.',            'NYSE',   'US', 'USD'),
+('MCD',   'McDonald''s Corporation',                  'NYSE',   'US', 'USD'),
+('CSCO',  'Cisco Systems Inc.',                       'NASDAQ', 'US', 'USD'),
+('ACN',   'Accenture plc',                            'NYSE',   'US', 'USD'),
+('ADBE',  'Adobe Inc.',                               'NASDAQ', 'US', 'USD'),
+('CRM',   'Salesforce Inc.',                          'NYSE',   'US', 'USD'),
+('NFLX',  'Netflix Inc.',                             'NASDAQ', 'US', 'USD'),
+('ABT',   'Abbott Laboratories',                      'NYSE',   'US', 'USD'),
+('WFC',   'Wells Fargo & Company',                    'NYSE',   'US', 'USD'),
+('AMD',   'Advanced Micro Devices Inc.',              'NASDAQ', 'US', 'USD'),
+('TXN',   'Texas Instruments Incorporated',           'NASDAQ', 'US', 'USD'),
+('QCOM',  'QUALCOMM Incorporated',                    'NASDAQ', 'US', 'USD'),
+('INTU',  'Intuit Inc.',                              'NASDAQ', 'US', 'USD'),
+('ORCL',  'Oracle Corporation',                       'NYSE',   'US', 'USD'),
+('IBM',   'International Business Machines Corp.',    'NYSE',   'US', 'USD'),
+('AMGN',  'Amgen Inc.',                               'NASDAQ', 'US', 'USD'),
+('RTX',   'RTX Corporation',                          'NYSE',   'US', 'USD'),
+('HON',   'Honeywell International Inc.',             'NASDAQ', 'US', 'USD'),
+('NEE',   'NextEra Energy Inc.',                      'NYSE',   'US', 'USD'),
+('PM',    'Philip Morris International Inc.',         'NYSE',   'US', 'USD'),
+('DHR',   'Danaher Corporation',                      'NYSE',   'US', 'USD'),
+('LIN',   'Linde plc',                                'NASDAQ', 'US', 'USD'),
+('INTC',  'Intel Corporation',                        'NASDAQ', 'US', 'USD'),
+('UBER',  'Uber Technologies Inc.',                   'NYSE',   'US', 'USD'),
+('PYPL',  'PayPal Holdings Inc.',                     'NASDAQ', 'US', 'USD'),
+
+-- ─── Finnish — Helsinki Stock Exchange (OMX Helsinki) ───────────────────────
+('NOKIA.HE',   'Nokia Corporation',                   'HEL', 'FI', 'EUR'),
+('NESTE.HE',   'Neste Oyj',                           'HEL', 'FI', 'EUR'),
+('KNEBV.HE',   'KONE Oyj',                            'HEL', 'FI', 'EUR'),
+('UPM.HE',     'UPM-Kymmene Oyj',                    'HEL', 'FI', 'EUR'),
+('STERV.HE',   'Stora Enso Oyj R',                   'HEL', 'FI', 'EUR'),
+('SAMPO.HE',   'Sampo plc A',                         'HEL', 'FI', 'EUR'),
+('ELISA.HE',   'Elisa Oyj',                           'HEL', 'FI', 'EUR'),
+('WRT1V.HE',   'Wärtsilä Oyj',                       'HEL', 'FI', 'EUR'),
+('METSO.HE',   'Metso Oyj',                           'HEL', 'FI', 'EUR'),
+('KESKOB.HE',  'Kesko Oyj B',                         'HEL', 'FI', 'EUR'),
+('ORNBV.HE',   'Orion Oyj B',                         'HEL', 'FI', 'EUR'),
+('TIE1V.HE',   'Tietoevry Oyj',                      'HEL', 'FI', 'EUR'),
+('OUT1V.HE',   'Outokumpu Oyj',                       'HEL', 'FI', 'EUR'),
+('FORTUM.HE',  'Fortum Oyj',                          'HEL', 'FI', 'EUR'),
+('NORDEA.HE',  'Nordea Bank Abp',                     'HEL', 'FI', 'EUR'),
+('NDA-FI.HE',  'Nordea Bank Abp (FI listing)',        'HEL', 'FI', 'EUR'),
+('PIHLIS.HE',  'Pihlajalinna Oyj',                    'HEL', 'FI', 'EUR'),
+('QTCOM.HE',   'Qt Group Oyj',                        'HEL', 'FI', 'EUR'),
+('KAMUX.HE',   'Kamux Corporation',                   'HEL', 'FI', 'EUR'),
+('REKA.HE',    'Reka Industrial Oyj',                 'HEL', 'FI', 'EUR')
+
+ON CONFLICT (symbol, exchange) DO UPDATE
+    SET name       = EXCLUDED.name,
+        active     = TRUE,
+        updated_at = now();
+
+COMMIT;
