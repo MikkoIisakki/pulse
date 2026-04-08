@@ -1,0 +1,18 @@
+[extend]
+# Extend the default gitleaks ruleset
+useDefault = true
+
+[allowlist]
+description = "Allowlisted files and patterns"
+paths = [
+    ".env.example",       # placeholder values only, no real secrets
+    "requirements*.txt",  # package names, not secrets
+]
+
+# Allowlist obvious placeholder values
+regexes = [
+    "changeme",
+    "your[_-]?api[_-]?key",
+    "your[_-]?key[_-]?here",
+    "<your-.*>",
+]
