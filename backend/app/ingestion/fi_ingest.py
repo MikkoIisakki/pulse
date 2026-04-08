@@ -1,16 +1,9 @@
-"""US EOD price ingest — fetches the top S&P 500 + Nasdaq tech universe.
+"""Finnish EOD price ingest — Helsinki Stock Exchange (.HE tickers).
 
-Entry point: ``run_us_ingest(pool)``
+Entry point: ``run_fi_ingest(pool)``
 
-Flow:
-  1. Open ingest_run (status=running)
-  2. Load active US assets from DB
-  3. For each asset: fetch yfinance → save raw snapshot → normalise → upsert prices
-  4. Close ingest_run (status=success | failed)
-
-Each asset is attempted independently — a single bad ticker does not abort
-the whole run.  The ingest_run row records how many succeeded so the health
-check and dashboards can reflect partial failures.
+Identical pipeline to us_ingest but targets market='FI'. Symbols in the asset
+table use the yfinance convention for Helsinki: TICKER.HE (e.g. NOKIA.HE).
 """
 
 from __future__ import annotations
@@ -29,8 +22,8 @@ from app.storage.repository import AnyConn
 
 logger = logging.getLogger(__name__)
 
-_MARKET = "US"
-_CONCURRENCY = 5  # simultaneous yfinance requests (they are HTTP under the hood)
+_MARKET = "FI"
+_CONCURRENCY = 3  # Helsinki universe is smaller; lower concurrency is fine
 
 
 async def _ingest_asset(
@@ -41,7 +34,7 @@ async def _ingest_asset(
     run_id: int,
     snapshot_date: date,
 ) -> bool:
-    """Ingest one asset. Returns True on success, False on any error."""
+    """Ingest one Finnish asset. Returns True on success, False on any error."""
     try:
         raw = await fetch_eod(symbol)
     except Exception:
@@ -61,7 +54,6 @@ async def _ingest_asset(
         )
     except Exception:
         logger.exception("Failed to save raw snapshot for %s", symbol)
-        # Non-fatal — we still try to persist prices
 
     if not raw["rows"]:
         logger.warning("No price rows returned for %s", symbol)
@@ -82,17 +74,17 @@ async def _ingest_asset(
     return True
 
 
-async def run_us_ingest(pool: asyncpg.Pool[asyncpg.Record]) -> None:
-    """Run the full US EOD ingest pipeline against *pool*."""
+async def run_fi_ingest(pool: asyncpg.Pool[asyncpg.Record]) -> None:
+    """Run the full Finnish EOD ingest pipeline against *pool*."""
     snapshot_date = date.today()
 
     async with pool.acquire() as conn:
         run_id = await repo.create_ingest_run(conn, _MARKET)
-        logger.info("Started US ingest run id=%d", run_id)
+        logger.info("Started FI ingest run id=%d", run_id)
 
         assets = await repo.get_active_assets(conn, _MARKET)
         if not assets:
-            logger.warning("No active US assets found — nothing to ingest")
+            logger.warning("No active FI assets found — nothing to ingest")
             await repo.finish_ingest_run(
                 conn,
                 run_id,
@@ -103,7 +95,6 @@ async def run_us_ingest(pool: asyncpg.Pool[asyncpg.Record]) -> None:
             )
             return
 
-        # Bounded concurrency via semaphore — avoids hammering yfinance
         sem = asyncio.Semaphore(_CONCURRENCY)
         attempted = len(assets)
 
@@ -132,7 +123,7 @@ async def run_us_ingest(pool: asyncpg.Pool[asyncpg.Record]) -> None:
             error_message=error,
         )
         logger.info(
-            "US ingest run id=%d finished: %s (%d/%d assets succeeded)",
+            "FI ingest run id=%d finished: %s (%d/%d assets succeeded)",
             run_id,
             status,
             succeeded,

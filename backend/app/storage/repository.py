@@ -7,17 +7,20 @@ control transaction boundaries. No business logic — pure data access.
 import json
 import logging
 from datetime import date
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import asyncpg
 import asyncpg.pool
 
 logger = logging.getLogger(__name__)
 
-# asyncpg.pool.acquire() returns a PoolConnectionProxy which is a subclass of
-# Connection. Both share the same query interface; this union lets callers pass
-# either without type errors.
-AnyConn = asyncpg.Connection[asyncpg.Record] | asyncpg.pool.PoolConnectionProxy[asyncpg.Record]
+# asyncpg.Connection is not subscriptable at runtime in asyncpg 0.30.
+# TYPE_CHECKING guard gives mypy the generic form; at runtime the bare Union
+# is used (Connection and PoolConnectionProxy share the same query interface).
+if TYPE_CHECKING:
+    AnyConn = asyncpg.Connection[asyncpg.Record] | asyncpg.pool.PoolConnectionProxy[asyncpg.Record]
+else:
+    AnyConn = asyncpg.Connection | asyncpg.pool.PoolConnectionProxy
 
 
 # ─────────────────────────────────────────────────────────────────────────────
