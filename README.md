@@ -5,9 +5,15 @@ Stock recommendation system for US (S&P 500 top + Nasdaq tech) and Finnish (Hels
 ## Getting started
 
 ```bash
+# One-time: install uv (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone and set up
 cp .env.example .env          # fill in DB password and API keys
-pip install pre-commit        # one-time
-pre-commit install            # installs git hooks — runs gitleaks + ruff + mypy on every commit
+uv sync --dev                 # create .venv and install all dependencies
+uv run pre-commit install     # install git hooks (gitleaks + ruff + mypy on every commit)
+
+# Start the system
 make up                       # build and start all services
 make migrate                  # apply DB migrations
 make seed                     # load seed data

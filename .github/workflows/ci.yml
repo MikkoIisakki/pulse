@@ -31,36 +31,36 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        run: pip install -r backend/requirements.txt -r requirements-dev.txt
+        run: uv sync --dev
 
       - name: Format check
-        run: ruff format backend/ --check
+        run: uv run ruff format backend/ --check
 
       - name: Lint
-        run: ruff check backend/
+        run: uv run ruff check backend/
 
       - name: Type check
-        run: mypy backend/app
+        run: uv run mypy backend/app
 
       - name: Security scan
-        run: bandit -r backend/app -ll --exit-zero-on-skips
+        run: uv run bandit -r backend/app -ll --exit-zero-on-skips
 
       - name: Complexity check
-        run: radon cc backend/app -n C --show-complexity
+        run: uv run radon cc backend/app -n C --show-complexity
 
       - name: Dependency vulnerability audit
-        run: pip-audit -r backend/requirements.txt
+        run: uv run pip-audit
 
       - name: License audit
-        run: |
-          pip install pip-licenses
-          pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
+        run: uv run pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
 
       - name: Tests + coverage
-        run: pytest tests/ -q
+        run: uv run pytest tests/ -q
         env:
           DATABASE_URL: postgresql://stocks:test@localhost:5432/stocks_test
 
