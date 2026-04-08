@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: stocks_test
+          POSTGRES_USER: stocks
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt -r requirements-dev.txt
+
+      - name: Format check
+        run: ruff format backend/ --check
+
+      - name: Lint
+        run: ruff check backend/
+
+      - name: Type check
+        run: mypy backend/app
+
+      - name: Security scan
+        run: bandit -r backend/app -ll --exit-zero-on-skips
+
+      - name: Complexity check
+        run: radon cc backend/app -n C --show-complexity
+
+      - name: Dependency vulnerability audit
+        run: pip-audit -r backend/requirements.txt
+
+      - name: License audit
+        run: |
+          pip install pip-licenses
+          pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
+
+      - name: Tests + coverage
+        run: pytest tests/ -q
+        env:
+          DATABASE_URL: postgresql://stocks:test@localhost:5432/stocks_test
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

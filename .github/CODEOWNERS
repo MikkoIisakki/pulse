@@ -1,0 +1,17 @@
+# Default owner for all files
+* @mikko
+
+# Infrastructure
+/k8s/ @mikko
+/docker-compose.yml @mikko
+
+# Agent and skill framework
+/.github/agents/ @mikko
+/.github/skills/ @mikko
+
+# Data layer and migrations
+/db/ @mikko
+/shared/ @mikko
+
+# Services
+/services/ @mikko

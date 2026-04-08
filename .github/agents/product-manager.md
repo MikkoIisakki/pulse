@@ -75,7 +75,7 @@ A task is done only when ALL of the following are true:
 - [ ] Tests written before or alongside implementation (TDD)
 - [ ] No regressions — existing tests still pass
 - [ ] `raw_source_snapshot` written for any new ingestion (data traceability)
-- [ ] Code reviewed by engineer self-review checklist
+- [ ] Code reviewed by independent reviewer (or explicit solo-review log)
 - [ ] Works end-to-end in Docker Compose (`make up && make migrate && make seed`)
 - [ ] No hardcoded values, secrets, or magic numbers
 - [ ] All config is in versioned files — no manual steps required to reproduce the setup

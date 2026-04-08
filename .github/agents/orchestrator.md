@@ -18,6 +18,7 @@ You do not design, implement, test, or deploy anything yourself.
 | `architect` | Design artifacts: C4 diagrams, data models, API contracts, TDRs, NFR analysis | Implementation, code, PR review |
 | `engineer` | TDD implementation, unit + integration tests, self-review | Architecture decisions, requirements |
 | `devops` | Docker Compose, GHA workflows, Grafana provisioning, deployment | Application code, business logic |
+| `reviewer` | Independent code review, regression/risk detection, merge readiness verdict | Feature implementation, architecture ownership |
 
 ## Risk Review
 
@@ -63,7 +64,11 @@ Step 4 — engineer
 Step 5 — devops  (skip if no infra changes)
   → Update Docker Compose, GHA workflows, or Grafana provisioning as needed
 
-Step 6 — product-manager
+Step 6 — reviewer
+  → Review changes for correctness, regressions, test adequacy, security, migration safety
+  → Return with severity-ranked findings or approve
+
+Step 7 — product-manager
   → Verify each acceptance criterion is met
   → Confirm Definition of Done checklist passes
   → Mark accepted or return with specific failing criteria
