@@ -122,6 +122,52 @@ async def upsert_daily_prices(conn: AnyConn, prices: list[dict[str, Any]]) -> in
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Energy
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+async def get_active_energy_regions(conn: AnyConn) -> list[dict[str, Any]]:
+    """Return all active energy regions with their VAT and tax parameters."""
+    rows = await conn.fetch(
+        "SELECT code, vat_rate, electricity_tax_c_kwh, active FROM energy_region WHERE active = TRUE ORDER BY code"
+    )
+    return [dict(row) for row in rows]
+
+
+async def upsert_energy_prices(conn: AnyConn, prices: list[dict[str, Any]]) -> int:
+    """Upsert a batch of hourly energy price rows. Returns the number of rows processed."""
+    if not prices:
+        return 0
+
+    await conn.executemany(
+        """
+        INSERT INTO energy_price
+               (region_code, ingest_run_id, price_date, hour, price_eur_mwh, spot_c_kwh, total_c_kwh)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ON CONFLICT (region_code, price_date, hour) DO UPDATE
+               SET price_eur_mwh = EXCLUDED.price_eur_mwh,
+                   spot_c_kwh    = EXCLUDED.spot_c_kwh,
+                   total_c_kwh   = EXCLUDED.total_c_kwh,
+                   ingest_run_id = EXCLUDED.ingest_run_id,
+                   fetched_at    = now()
+        """,
+        [
+            (
+                p["region_code"],
+                p["ingest_run_id"],
+                p["price_date"],
+                p["hour"],
+                p["price_eur_mwh"],
+                p["spot_c_kwh"],
+                p["total_c_kwh"],
+            )
+            for p in prices
+        ],
+    )
+    return len(prices)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Raw source snapshots
 # ─────────────────────────────────────────────────────────────────────────────
 
