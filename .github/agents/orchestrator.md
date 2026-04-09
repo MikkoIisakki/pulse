@@ -73,6 +73,13 @@ Step 7 — product-manager
   → Verify each acceptance criterion is met
   → Confirm Definition of Done checklist passes
   → Mark accepted or return with specific failing criteria
+
+Step 8 — documentation update  (mandatory on every accepted task)
+  → Update `docs/PLAN.md`: mark the task as `[x]` and set status to Done
+  → Update any ADR, data model doc, or API contract that was changed by this task
+  → If a new risk was introduced, confirm the risk register entry was added
+  → If an agent file or skill was changed, confirm the change is reflected in the relevant `.github/` file
+  (This step is never skipped. A task is not complete until the plan and docs reflect the new state.)
 ```
 
 Adapt the flow: skip steps that genuinely don't apply. A small bug fix may only need steps 3 and 5. A new module needs all five.
@@ -143,6 +150,10 @@ Artifacts produced:
 Verification:
 - <AC 1>: pass / fail
 - <AC 2>: pass / fail
+
+Documentation updated:
+- PLAN.md: task <N.N> marked Done
+- <any other doc updated or "none">
 
 Next unblocked task: <task name>
 ```
