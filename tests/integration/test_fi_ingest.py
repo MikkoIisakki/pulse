@@ -1,10 +1,13 @@
-"""Integration tests for Finnish ingest pipeline."""
+"""Tests for the Finnish ingest pipeline.
+
+All external dependencies (yfinance, DB) are mocked so no live database
+or network is needed. These tests verify orchestration logic only.
+"""
 
 from datetime import date
 from typing import Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
-import asyncpg
 import pytest
 
 from app.ingestion.fi_ingest import run_fi_ingest
@@ -27,8 +30,24 @@ def _fake_fetch(symbol: str, *, lookback_days: int = 5) -> dict[str, Any]:
     }
 
 
+def _mock_pool() -> MagicMock:
+    """Pool mock whose acquire() yields a dummy connection."""
+    conn = MagicMock()
+    pool = MagicMock()
+
+    class _AcquireCtx:
+        async def __aenter__(self) -> MagicMock:
+            return conn
+
+        async def __aexit__(self, *_: Any) -> None:
+            pass
+
+    pool.acquire.return_value = _AcquireCtx()
+    return pool
+
+
 @pytest.mark.asyncio
-async def test_successful_fi_ingest(db_pool: asyncpg.Pool) -> None:
+async def test_successful_fi_ingest() -> None:
     fake_assets = [{"id": 998, "symbol": "NOKIA.HE", "exchange": "HEL"}]
 
     with (
@@ -39,7 +58,7 @@ async def test_successful_fi_ingest(db_pool: asyncpg.Pool) -> None:
         patch("app.ingestion.fi_ingest.repo.create_ingest_run", new=AsyncMock(return_value=50)),
         patch("app.ingestion.fi_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_fi_ingest(db_pool)
+        await run_fi_ingest(_mock_pool())
 
     mock_finish.assert_called_once()
     _, call_kwargs = mock_finish.call_args
@@ -49,20 +68,20 @@ async def test_successful_fi_ingest(db_pool: asyncpg.Pool) -> None:
 
 
 @pytest.mark.asyncio
-async def test_empty_fi_asset_list_marks_run_failed(db_pool: asyncpg.Pool) -> None:
+async def test_empty_fi_asset_list_marks_run_failed() -> None:
     with (
         patch("app.ingestion.fi_ingest.repo.get_active_assets", return_value=[]),
         patch("app.ingestion.fi_ingest.repo.create_ingest_run", new=AsyncMock(return_value=51)),
         patch("app.ingestion.fi_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_fi_ingest(db_pool)
+        await run_fi_ingest(_mock_pool())
 
     _, call_kwargs = mock_finish.call_args
     assert call_kwargs["status"] == "failed"
 
 
 @pytest.mark.asyncio
-async def test_fi_fetch_exception_counts_as_failure(db_pool: asyncpg.Pool) -> None:
+async def test_fi_fetch_exception_counts_as_failure() -> None:
     fake_assets = [{"id": 998, "symbol": "NOKIA.HE", "exchange": "HEL"}]
 
     async def boom(symbol: str, **_: Any) -> dict[str, Any]:
@@ -74,7 +93,7 @@ async def test_fi_fetch_exception_counts_as_failure(db_pool: asyncpg.Pool) -> No
         patch("app.ingestion.fi_ingest.repo.create_ingest_run", new=AsyncMock(return_value=52)),
         patch("app.ingestion.fi_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_fi_ingest(db_pool)
+        await run_fi_ingest(_mock_pool())
 
     _, call_kwargs = mock_finish.call_args
     assert call_kwargs["status"] == "failed"

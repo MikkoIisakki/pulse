@@ -1,21 +1,19 @@
-"""Integration tests for US ingest pipeline.
+"""Tests for the US ingest pipeline.
 
-Tests run against the real test database (via db_conn fixture from conftest.py)
-and mock only the yfinance HTTP calls so no network is needed in CI.
+All external dependencies (yfinance, DB) are mocked so no live database
+or network is needed. These tests verify orchestration logic only.
 """
 
 from datetime import date
 from typing import Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
-import asyncpg
 import pytest
 
 from app.ingestion.us_ingest import run_us_ingest
 
 
 def _fake_fetch(symbol: str, *, lookback_days: int = 5) -> dict[str, Any]:
-    """Return a single realistic price row for any symbol."""
     return {
         "symbol": symbol,
         "rows": [
@@ -32,22 +30,24 @@ def _fake_fetch(symbol: str, *, lookback_days: int = 5) -> dict[str, Any]:
     }
 
 
-@pytest.fixture()
-async def single_asset_pool(db_conn: asyncpg.Connection, db_pool: asyncpg.Pool) -> asyncpg.Pool:
-    """Seed one US asset for ingest tests.
+def _mock_pool() -> MagicMock:
+    """Pool mock whose acquire() yields a dummy connection."""
+    conn = MagicMock()
+    pool = MagicMock()
 
-    We insert directly via db_conn (which is inside a rolled-back transaction),
-    but run_us_ingest acquires its own connection from the pool — so we need
-    to commit a real row and clean it up after.
+    class _AcquireCtx:
+        async def __aenter__(self) -> MagicMock:
+            return conn
 
-    To avoid that complexity we patch get_active_assets instead.
-    """
-    return db_pool
+        async def __aexit__(self, *_: Any) -> None:
+            pass
+
+    pool.acquire.return_value = _AcquireCtx()
+    return pool
 
 
 @pytest.mark.asyncio
-async def test_successful_ingest_creates_run_and_prices(db_pool: asyncpg.Pool) -> None:
-    """End-to-end: fetch mocked prices → persisted to DB → ingest_run=success."""
+async def test_successful_ingest_creates_run_and_prices() -> None:
     fake_assets = [{"id": 999, "symbol": "AAPL", "exchange": "NASDAQ"}]
 
     with (
@@ -58,7 +58,7 @@ async def test_successful_ingest_creates_run_and_prices(db_pool: asyncpg.Pool) -
         patch("app.ingestion.us_ingest.repo.create_ingest_run", new=AsyncMock(return_value=42)),
         patch("app.ingestion.us_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_us_ingest(db_pool)
+        await run_us_ingest(_mock_pool())
 
     mock_finish.assert_called_once()
     _, call_kwargs = mock_finish.call_args
@@ -68,13 +68,13 @@ async def test_successful_ingest_creates_run_and_prices(db_pool: asyncpg.Pool) -
 
 
 @pytest.mark.asyncio
-async def test_empty_asset_list_marks_run_failed(db_pool: asyncpg.Pool) -> None:
+async def test_empty_asset_list_marks_run_failed() -> None:
     with (
         patch("app.ingestion.us_ingest.repo.get_active_assets", return_value=[]),
         patch("app.ingestion.us_ingest.repo.create_ingest_run", new=AsyncMock(return_value=43)),
         patch("app.ingestion.us_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_us_ingest(db_pool)
+        await run_us_ingest(_mock_pool())
 
     _, call_kwargs = mock_finish.call_args
     assert call_kwargs["status"] == "failed"
@@ -82,7 +82,7 @@ async def test_empty_asset_list_marks_run_failed(db_pool: asyncpg.Pool) -> None:
 
 
 @pytest.mark.asyncio
-async def test_fetch_exception_counts_as_failure(db_pool: asyncpg.Pool) -> None:
+async def test_fetch_exception_counts_as_failure() -> None:
     fake_assets = [{"id": 999, "symbol": "BADFEED", "exchange": "NYSE"}]
 
     async def boom(symbol: str, **_: Any) -> dict[str, Any]:
@@ -94,7 +94,7 @@ async def test_fetch_exception_counts_as_failure(db_pool: asyncpg.Pool) -> None:
         patch("app.ingestion.us_ingest.repo.create_ingest_run", new=AsyncMock(return_value=44)),
         patch("app.ingestion.us_ingest.repo.finish_ingest_run", new=AsyncMock()) as mock_finish,
     ):
-        await run_us_ingest(db_pool)
+        await run_us_ingest(_mock_pool())
 
     _, call_kwargs = mock_finish.call_args
     assert call_kwargs["status"] == "failed"
