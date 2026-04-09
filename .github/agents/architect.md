@@ -110,10 +110,16 @@ Use text-based diagram formats (Mermaid, ASCII) so artifacts are version-control
 | **Testability** | Can components be tested in isolation? |
 | **Extensibility** | Can the architecture accommodate Phase 4 (premium data, ML, multi-user) without a rewrite? |
 
-## Current System: Stocklens
+## Current System: Pulse — White-label Screener Platform
 
 ### System Goals
-Stock screening system producing ranked assets and threshold alerts for US (S&P 500 top + Nasdaq tech) and Finnish (Helsinki exchange) markets. Long-term and short-term horizons. Personal use initially, extensible to multi-user SaaS.
+Multi-domain screener platform. One codebase powers separate apps for each domain: electricity spot prices (Nordic market), stock screening (US + Finnish markets), crypto screening (top 50 by market cap). Each domain app is independently deployable, branded, and listed on App Stores. Shared pipeline: ingest → normalise → score/rank → alert → push notification.
+
+**Domain priority**: electricity first (free API, no regulation), crypto second, stocks third (licensing cost and MiFID II gate for public release).
+
+### Repository
+Internal codebase name: `stocklens` (foundation built on stocks domain).
+Platform/app brand: **Pulse** (separate domain-specific apps: Pulse Energy, Pulse Crypto, Pulse Stocks).
 
 ### Established Architecture Decisions
 

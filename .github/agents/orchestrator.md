@@ -77,16 +77,30 @@ Step 7 — product-manager
 
 Adapt the flow: skip steps that genuinely don't apply. A small bug fix may only need steps 3 and 5. A new module needs all five.
 
+## Platform Scope
+
+**Pulse** is a white-label screener platform. One codebase powers multiple domain-focused apps (electricity prices, stocks, crypto). Each domain is a separately branded App Store listing built from shared code via configuration.
+
+**Domain priority (free APIs first):**
+1. **Electricity** — Nordpool/ENTSO-E free API, no licensing cost, no financial regulation, first public release candidate
+2. **Crypto** — CoinGecko free tier, no licensing cost, MiCA screening check before store release
+3. **Stocks** — yfinance (personal use only); store release gated on licensed data source + MiFID II review
+
 ## Phase Gates
 
 Do not route work that belongs to a future phase. Check the current phase before accepting any task:
 
-- **Phase 1** — Data Foundation: project structure, schema, ingesters, scheduler, basic API
-- **Phase 2** — Factor Engine: signals, scoring, ranking endpoints
-- **Phase 3** — Alerts + Grafana dashboards
-- **Phase 4** — Backtesting, premium data, Next.js UI, DigitalOcean deployment
+- **Phase 1** ✅ — Platform Foundation: project structure, schema, ingesters (stocks), scheduler, REST API, health check
+- **Phase 2** — Electricity Domain: Nordpool ingest, price normalisation, alerts, energy API, Grafana energy dashboard
+- **Phase 3** — Platform Architecture: domain config system, white-label mobile/web shells, auth, push notifications, EAS pipeline, deployment
+- **Phase 4** — Stock Factor Engine: signals (EPS, RS, RSI, MACD, volume), composite score, ranking API
+- **Phase 5** — Stock Screening + Alerts: alert rules, Grafana dashboards, backtest module
+- **Phase 6** — Crypto Domain: CoinGecko ingest, technical signals, crypto rankings
+- **Phase 7** — App Store Releases: electricity app (no gate), crypto app (MiCA check), stock app (licensing + legal gate)
 
 If a task spans phases, split it. Only the current-phase portion proceeds.
+
+**Domain-specific routing note**: Step 1 (analyst) applies only to scoring/algorithm tasks (stocks, crypto). For infrastructure tasks or the electricity domain (price data has no investment thesis), skip Step 1.
 
 ## How to Invoke
 
