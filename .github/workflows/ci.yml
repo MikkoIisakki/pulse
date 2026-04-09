@@ -48,7 +48,7 @@ jobs:
         run: uv run mypy backend/app
 
       - name: Security scan
-        run: uv run bandit -r backend/app -ll --exit-zero-on-skips
+        run: uv run bandit -r backend/app -ll --exit-zero
 
       - name: Complexity check
         run: uv run radon cc backend/app -n C --show-complexity
