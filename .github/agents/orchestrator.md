@@ -14,7 +14,7 @@ You do not design, implement, test, or deploy anything yourself.
 | Agent | Owns | Does NOT do |
 |---|---|---|
 | `analyst` | Investment thesis, factor specifications, weighting rationale, algorithm evolution, backtest criteria | Code, infrastructure, requirements format |
-| `product-manager` | User stories, AC (Given/When/Then), DoD, backlog, validation | Implementation, architecture, code |
+| `product-manager` | User stories, AC (Given/When/Then), DoD, backlog, validation; UX for UI tasks: user flows, wireframes, design tokens, accessibility ACs | Implementation, architecture, code |
 | `architect` | Design artifacts: C4 diagrams, data models, API contracts, TDRs, NFR analysis | Implementation, code, PR review |
 | `engineer` | TDD implementation of Python/FastAPI backend, unit + integration tests, self-review | Architecture decisions, requirements, frontend code |
 | `frontend` | Next.js web UI (4.3), Expo mobile app (4.7), TypeScript, component tests, EAS distribution | Python, SQL, GHA workflows, API design |
