@@ -1,6 +1,6 @@
 # stocklens
 
-Stock recommendation system for US (S&P 500 top + Nasdaq tech) and Finnish (Helsinki exchange) markets.
+Stock following and screening system for US (S&P 500 top + Nasdaq tech) and Finnish (Helsinki exchange) markets.
 
 ## Getting started
 
