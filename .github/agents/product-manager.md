@@ -32,7 +32,7 @@ So that [benefit / outcome]
 **Example:**
 ```
 As an investor
-I want to see a ranked list of buy candidates scored by composite signal
+I want to see a ranked list of assets scored by composite signal
 So that I can prioritize which stocks to research further
 ```
 
@@ -103,10 +103,10 @@ A task is done only when ALL of the following are true:
 | Compute long-term signals (EPS acceleration, revenue growth, margins, ROE) | Must |
 | Compute short-term signals (RS, RSI, MACD, volume spike) | Must |
 | Produce composite score per asset per day (long + short horizon) | Must |
-| View ranked buy candidates via API | Must |
+| View ranked assets via API | Must |
 | Score must be explainable (which factors drove it) | Must |
 
-### Phase 3 — Recommendations + Alerts
+### Phase 3 — Screening + Alerts
 | Story | Priority |
 |---|---|
 | Define alert rules (threshold on any metric) | Must |

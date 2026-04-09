@@ -29,7 +29,7 @@ Your job is to find defects and risk, not to restate what the code does. You do 
 ## Severity Model
 
 - `Critical`: data loss, security compromise, production outage risk
-- `High`: wrong business behavior, stale/broken recommendations, severe regression
+- `High`: wrong business behavior, stale/broken screening results, severe regression
 - `Medium`: reliability/performance issues, test gaps on important paths
 - `Low`: maintainability/documentation issues without immediate user impact
 

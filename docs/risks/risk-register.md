@@ -25,7 +25,7 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 **Description**: yfinance is an unofficial Yahoo Finance scraper, not a supported API. Yahoo could change their response format, rate-limit aggressively, or block the library at any time without notice.
 
-**Consequences**: All US and Finnish price ingestion fails. Scores go stale. No recommendations until alternative is wired.
+**Consequences**: All US and Finnish price ingestion fails. Scores go stale. No screening results until alternative is wired.
 
 **Mitigation**:
 - `raw_source_snapshot` stores every raw response — can replay normalization without re-fetching
@@ -61,7 +61,7 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 - yfinance `.info` used as primary fundamentals source; AV as supplement
 - `raw_source_snapshot` means if AV key is upgraded, historical gaps can be backfilled
 
-**Contingency**: Upgrade to Alpha Vantage premium ($50/month) if fundamental data quality is materially impacting recommendation quality.
+**Contingency**: Upgrade to Alpha Vantage premium ($50/month) if fundamental data quality is materially impacting screening quality.
 
 **Review trigger**: Phase 4 — if premium data is needed for production quality.
 
@@ -181,7 +181,7 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 ## Domain / Algorithm Risks
 
-### RISK-007: Scoring model produces misleading recommendations
+### RISK-007: Scoring model produces misleading screening results
 
 | Field | Value |
 |---|---|
@@ -195,18 +195,18 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 **Description**: The rule-based scoring model with current weights has not been validated against historical returns. Weights are evidence-informed but not empirically tested on this universe.
 
-**Consequences**: High-scored stocks underperform; low-scored stocks outperform. Recommendations actively mislead rather than help.
+**Consequences**: High-scored stocks underperform; low-scored stocks outperform. Screening results actively mislead rather than help.
 
 **Mitigation**:
 - Analyst documents failure conditions and market regimes where each factor breaks (in `analyst.md`)
 - Factor weights are configurable — can be adjusted as evidence accumulates
-- `score_snapshot` stores `factor_contributions` — every recommendation is explainable and auditable
+- `score_snapshot` stores `factor_contributions` — every screening result is explainable and auditable
 - Backtest module (Phase 4) will validate weights against historical data before increasing trust in the model
-- User (Mikko) treats recommendations as one input to research, not as trade signals
+- User (Mikko) treats screening results as one input to research, not as trade signals
 
 **Contingency**: If observation shows consistent underperformance, analyst reviews factor weights and proposes rebalancing. Backtest validates before deploying new weights.
 
-**Review trigger**: After 3 months of data, review top-20 recommendations vs actual returns. After Phase 4 backtest is available.
+**Review trigger**: After 3 months of data, review top-20 screened assets vs actual returns. After Phase 4 backtest is available.
 
 ---
 
@@ -251,14 +251,14 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 **Description**: yfinance fundamentals coverage for Helsinki-listed stocks is incomplete, especially for mid/small-cap companies. Fundamental signals (EPS acceleration, valuation score, quality score) may be unavailable for many FI tickers.
 
-**Consequences**: FI recommendations are weighted more heavily on technical signals (RS, RSI, volume) and less on fundamentals — a less complete picture. Scoring confidence will be lower.
+**Consequences**: FI screening results are weighted more heavily on technical signals (RS, RSI, volume) and less on fundamentals — a less complete picture. Scoring confidence will be lower.
 
 **Mitigation**:
 - `Signal` type includes `signal_type='unavailable'` with `weight=0.0` — missing factors are excluded from scoring, not zeroed
 - `score_snapshot.confidence` field reflects proportion of factors available — low-confidence scores are clearly flagged
 - Analyst specifications note reduced coverage expectations for FI mid/small-cap
 
-**Contingency**: If FI fundamental coverage is too thin to be useful, restrict Finnish recommendations to large-caps (Nokia, Neste, Kone, Sampo) where coverage is reliable.
+**Contingency**: If FI fundamental coverage is too thin to be useful, restrict Finnish screening to large-caps (Nokia, Neste, Kone, Sampo) where coverage is reliable.
 
 **Review trigger**: After first full ingest cycle — check what % of FI tickers have usable fundamental data.
 
@@ -347,7 +347,7 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 **Contingency**: If ToS enforcement occurs, switch ingestion to a compliant provider (Polygon.io, Tiingo, Alpha Vantage premium). Storage and scoring layers are unaffected.
 
-**Review trigger**: Any decision to move to multi-user SaaS (Phase 4). At that point, legal review of all data source ToS is mandatory before launch.
+**Review trigger**: App store public release (task 4.8 gate). Legal review of all data source ToS, MiFID II framing, and GDPR compliance is mandatory before any public store listing. Personal use via TestFlight/sideload does not require this review.
 
 ---
 *Add new risks as they are identified. Re-score existing risks at each phase boundary.*

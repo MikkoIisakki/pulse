@@ -21,7 +21,7 @@ graph TD
     FRED[FRED API]
     FH[Finnhub API]
 
-    User -->|views recommendations & alerts| System
+    User -->|views screening results & alerts| System
     System -->|fetches OHLCV + fundamentals| YF
     System -->|fetches fundamentals + technicals| AV
     System -->|fetches macro indicators| FRED

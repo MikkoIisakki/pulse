@@ -96,7 +96,7 @@ See `gitops` skill for full branch strategy, image tagging, and environment prom
 Provision four dashboard folders as JSON files in `services/grafana/provisioning/dashboards/`:
 
 1. **Pipeline** (`pipeline.json`) — ingest run status, stale data warnings, API errors, source health
-2. **Market** (`market.json`) — top buy candidates by score, RS heatmap, unusual volume, sector momentum
+2. **Market** (`market.json`) — top-ranked assets by score, RS heatmap, unusual volume, sector momentum
 3. **Fundamentals** (`fundamentals.json`) — EPS/revenue acceleration, margin expansion, ROE/ROIC/debt
 4. **Alerts** (`alerts.json`) — unacknowledged alert events, breakouts, insider signals, watchlist triggers
 

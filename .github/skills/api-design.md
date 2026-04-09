@@ -48,7 +48,7 @@ All list endpoints support `limit` and `offset`:
 
 ```
 GET /v1/assets?limit=20&offset=0
-GET /v1/recommendations?limit=10&offset=20&market=US&horizon=long_term
+GET /v1/rankings?limit=10&offset=20&market=US&horizon=long_term
 ```
 
 Default `limit`: 20. Max `limit`: 100. Always return `meta.total` so clients can paginate.

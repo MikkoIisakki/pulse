@@ -14,7 +14,7 @@
 | US-07 | Compute long-term signals (EPS, revenue, margins, ROE) | 2 | Must | — | — | — | Pending |
 | US-08 | Compute short-term signals (RS, RSI, MACD, volume) | 2 | Must | — | — | — | Pending |
 | US-09 | Composite score per asset per day (long + short horizon) | 2 | Must | — | — | — | Pending |
-| US-10 | View ranked buy candidates via API | 2 | Must | — | — | — | Pending |
+| US-10 | View ranked assets via API | 2 | Must | — | — | — | Pending |
 | US-11 | Score is explainable (factor contributions visible) | 2 | Must | — | — | — | Pending |
 | US-12 | Define threshold-based alert rules | 3 | Must | — | — | — | Pending |
 | US-13 | Receive alert events when rules trigger | 3 | Must | — | — | — | Pending |

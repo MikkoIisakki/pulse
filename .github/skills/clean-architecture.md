@@ -134,11 +134,11 @@ Wiring. Plugs everything together. Contains no business logic.
 ```python
 # main.py — framework layer
 from fastapi import FastAPI
-from app.api.routers import assets, recommendations, alerts
+from app.api.routers import assets, rankings, alerts
 
 app = FastAPI()
 app.include_router(assets.router, prefix="/v1")
-app.include_router(recommendations.router, prefix="/v1")
+app.include_router(rankings.router, prefix="/v1")
 ```
 
 ---
@@ -190,7 +190,7 @@ app/
   models/
   views/
 
-# Good — screams "it's a stock recommendation system"
+# Good — screams "it's a stock screening system"
 app/
   signals/          ← computes investment signals
   scoring/          ← scores and ranks assets

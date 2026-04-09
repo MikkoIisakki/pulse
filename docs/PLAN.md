@@ -35,7 +35,7 @@ Goal: reliable daily price ingestion for US + Finnish markets, stored with full 
 
 ## Phase 2 — Factor Engine
 
-Goal: compute all 8 signals per asset per day, produce a composite score, expose ranked buy candidates via API.
+Goal: compute all 8 signals per asset per day, produce a composite score, expose ranked assets via API.
 
 | # | Task | Status |
 |---|---|---|
@@ -48,7 +48,7 @@ Goal: compute all 8 signals per asset per day, produce a composite score, expose
 
 ---
 
-## Phase 3 — Recommendations + Alerts
+## Phase 3 — Screening + Alerts
 
 Goal: threshold-based alert rules, Grafana dashboards for pipeline health and market overview.
 
@@ -75,6 +75,21 @@ Goal: threshold-based alert rules, Grafana dashboards for pipeline health and ma
 | 4.5 | Auth layer — API key / JWT for authenticated access (prerequisite for mobile) | ⬜ Todo |
 | 4.6 | Push notification infrastructure — FCM/APNs + device registration endpoint | ⬜ Todo |
 | 4.7 | Expo mobile app — rankings, alert history, push alerts (iOS + Android) | ⬜ Todo |
+| 4.8 | **App store prerequisite gate** — data source migration + legal review (blocks 4.7 public release) | ⬜ Todo |
+
+### App store prerequisite gate (4.8)
+
+**Must be completed before submitting 4.7 to App Store or Google Play.**
+
+| Prerequisite | Requirement | Current status |
+|---|---|---|
+| Data source licensing | Replace yfinance with a licensed provider (Polygon.io recommended) | ⬜ Blocked — yfinance ToS prohibits commercial redistribution |
+| MiFID II / FIN-FSA review | Legal review of feature set framing before public distribution in Finland/EU | ⬜ Not started |
+| GDPR compliance | Privacy policy, data retention policy, user data deletion mechanism | ⬜ Not started |
+| App store metadata | "Not investment advice" disclaimer prominent in listing and app onboarding | ⬜ Not started |
+| Wording audit | All user-facing copy uses screening/ranking language — no advice/recommendation wording | ⬜ Ongoing (enforced by analyst agent) |
+
+TestFlight (iOS) and APK sideload (Android) for **personal use** do not require this gate. The gate applies only to public store listing.
 
 ### Phase 4 UI strategy
 
@@ -109,7 +124,7 @@ Task 4.5 (auth) is a prerequisite for 4.7. Tasks 4.3 and 4.7 are independent and
 | RISK-002: Alpha Vantage free tier limits fundamental coverage | Mitigated |
 | RISK-003: Scope creep beyond current phase | Open |
 | RISK-004: Silent ingest failure — scores go stale | Mitigated |
-| RISK-007: Scoring model produces misleading recommendations | Open |
+| RISK-007: Scoring model produces misleading screening results | Open |
 | RISK-009: Finnish market fundamental data insufficient | Accepted |
 | RISK-012: yfinance ToS violation at SaaS scale | Accepted (personal use) |
 

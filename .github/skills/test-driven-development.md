@@ -56,7 +56,7 @@ tests/
     test_storage_prices.py
     test_storage_factors.py
     test_api_assets.py
-    test_api_recommendations.py
+    test_api_rankings.py
   conftest.py
 ```
 

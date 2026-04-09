@@ -113,7 +113,7 @@ Use text-based diagram formats (Mermaid, ASCII) so artifacts are version-control
 ## Current System: Stocklens
 
 ### System Goals
-Stock recommendation system producing ranked buy candidates and threshold alerts for US (S&P 500 top + Nasdaq tech) and Finnish (Helsinki exchange) markets. Long-term and short-term horizons. Personal use initially, extensible to multi-user SaaS.
+Stock screening system producing ranked assets and threshold alerts for US (S&P 500 top + Nasdaq tech) and Finnish (Helsinki exchange) markets. Long-term and short-term horizons. Personal use initially, extensible to multi-user SaaS.
 
 ### Established Architecture Decisions
 

@@ -90,7 +90,7 @@ Common risks for this project:
 - **Silent scoring failure** — processor crashes without alert; scores go stale unnoticed
 
 ### Domain / Algorithm Risks
-Threaten the quality of investment recommendations.
+Threaten the quality of screening results.
 
 Common risks for this project:
 - **Factor decay** — a signal that worked historically stops working (crowding, regime change)
@@ -98,7 +98,7 @@ Common risks for this project:
 - **Look-ahead bias** — using data in scoring that wouldn't have been available at decision time
 - **Market regime change** — momentum/growth factors underperform in value/defensive environments
 - **Finnish market data gaps** — yfinance coverage for .HE tickers is incomplete for fundamentals
-- **Recommendation acting as advice** — treating scores as certainty rather than probabilistic signal
+- **Screening results acting as advice** — treating scores as certainty rather than probabilistic signal
 
 ### Operational Risks
 Threaten the running system in production.

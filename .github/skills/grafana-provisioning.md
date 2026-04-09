@@ -91,7 +91,7 @@ Minimum required fields for a valid dashboard JSON:
 
 ## Panel SQL Examples
 
-**Top recommendations table**:
+**Top-ranked assets table**:
 ```sql
 SELECT
     a.symbol,

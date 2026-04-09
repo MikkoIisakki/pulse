@@ -30,8 +30,8 @@ Use this skill when performing independent review.
 Report only actionable findings. Order by severity.
 
 ```
-- [High] Recommendation endpoint returns stale data window
-  File: services/api/routers/recommendations.py:34
+- [High] Rankings endpoint returns stale data window
+  File: services/api/routers/rankings.py:34
   Why: breaks ranking correctness and user trust
   Fix: filter latest rows by symbol after date window logic update
 ```

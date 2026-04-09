@@ -87,7 +87,7 @@ tests/
     test_storage_factors.py
     test_storage_scores.py
     test_api_assets.py        ← all endpoints, all error codes
-    test_api_recommendations.py
+    test_api_rankings.py
     test_api_alerts.py
     test_migrations.py        ← migrations apply cleanly to empty DB
   conftest.py                 ← DB pool, clean_db, data factories
