@@ -16,14 +16,14 @@ logs:
 migrate:
 	@for f in db/migrations/*.sql; do \
 		echo "Applying $$f"; \
-		docker compose exec db psql -U $${DB_USER:-stocks} -d $${DB_NAME:-stocks} -f "/dev/stdin" < "$$f"; \
+		docker compose exec -T db psql -U $${DB_USER:-stocks} -d $${DB_NAME:-stocks} -f "/dev/stdin" < "$$f"; \
 	done
 
 ## Apply all seed files in order
 seed:
 	@for f in db/seeds/*.sql; do \
 		echo "Seeding $$f"; \
-		docker compose exec db psql -U $${DB_USER:-stocks} -d $${DB_NAME:-stocks} -f "/dev/stdin" < "$$f"; \
+		docker compose exec -T db psql -U $${DB_USER:-stocks} -d $${DB_NAME:-stocks} -f "/dev/stdin" < "$$f"; \
 	done
 
 ## Run tests with coverage
