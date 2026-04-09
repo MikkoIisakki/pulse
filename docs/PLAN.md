@@ -72,6 +72,22 @@ Goal: threshold-based alert rules, Grafana dashboards for pipeline health and ma
 | 4.2 | Premium data source integration (Polygon.io or Alpha Vantage premium) | ⬜ Todo |
 | 4.3 | Next.js watchlist + screener UI | ⬜ Todo |
 | 4.4 | DOKS deployment (if load justifies it) | ⬜ Todo |
+| 4.5 | Auth layer — API key / JWT for authenticated access (prerequisite for mobile) | ⬜ Todo |
+| 4.6 | Push notification infrastructure — FCM/APNs + device registration endpoint | ⬜ Todo |
+| 4.7 | Expo mobile app — rankings, alert history, push alerts (iOS + Android) | ⬜ Todo |
+
+### Phase 4 UI strategy
+
+Two complementary frontends — both consume the same REST API:
+
+| Frontend | Tech | Access model | Primary use |
+|---|---|---|---|
+| Next.js (4.3) | React / Next.js | Browser | Full screener, watchlist management, backtest results |
+| Mobile app (4.7) | Expo / React Native | iOS + Android | Rankings at a glance, push alerts, on-the-go checks |
+
+Grafana remains as the **ops monitoring** layer (pipeline health, ingest status) — it is not replaced by either UI.
+
+Task 4.5 (auth) is a prerequisite for 4.7. Tasks 4.3 and 4.7 are independent and can be built in parallel.
 
 ---
 
