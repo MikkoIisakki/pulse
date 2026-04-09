@@ -35,9 +35,30 @@ Every design artifact must specify which layer each component lives in and what 
 ## Documentation Responsibility
 
 - Write an **ADR** in `decisions/` for every significant technology or architecture decision
-- Produce **diagrams** in `docs/architecture/` (Mermaid, version-controlled)
-- Maintain `docs/architecture/data-model.md` and `docs/architecture/nfr-matrix.md`
+- Produce **diagrams** in `docs/user/architecture/` using **Mermaid** (rendered by MkDocs Material)
+- Maintain `docs/user/architecture/data-model.md` and keep the `docs/user/architecture.md` overview index up to date
 - Every artifact ships in the same PR as the decision it documents
+
+### Diagram format and locations
+
+All diagrams use **Mermaid** in fenced code blocks (` ```mermaid `). Do not use ASCII art for new diagrams.
+
+| Artifact | File | Mermaid diagram type |
+|---|---|---|
+| System Context (C4 L1) | `docs/user/architecture/system-context.md` | `graph TD` with subgraphs |
+| Containers (C4 L2) | `docs/user/architecture/containers.md` | `graph TD` with subgraphs |
+| Module boundaries (C4 L3) | `docs/user/architecture/modules.md` | `graph TD` with subgraphs |
+| ER / data model | `docs/user/architecture/data-model.md` | `erDiagram` |
+| Sequence / flow | `docs/user/architecture/sequences.md` | `sequenceDiagram` |
+
+When adding a new diagram, also update the **Quick map** table in `docs/user/architecture.md`.
+
+MkDocs nav entry for new pages:
+```yaml
+- Architecture:
+    - Overview: architecture.md
+    - New Page: architecture/new-page.md   # add to mkdocs.yml nav
+```
 
 See `documentation-standards` skill for ADR format and folder structure.
 

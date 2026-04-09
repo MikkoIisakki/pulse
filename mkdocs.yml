@@ -28,17 +28,30 @@ theme:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - tables
   - attr_list
 
+extra_javascript:
+  - https://unpkg.com/mermaid@11/dist/mermaid.min.js
+
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - API Reference: api-reference.md
-  - Architecture: architecture.md
+  - Architecture:
+      - Overview: architecture.md
+      - System Context: architecture/system-context.md
+      - Containers: architecture/containers.md
+      - Module Boundaries: architecture/modules.md
+      - Data Model: architecture/data-model.md
+      - Key Flows: architecture/sequences.md
   - Data Sources: data-sources.md
   - Operations: operations.md

@@ -1,90 +1,42 @@
-# Architecture
-
-## Overview
+# Architecture Overview
 
 Stocklens is a **modular monolith** — a single deployable unit organised into well-defined internal modules. This keeps operations simple (one image, one deploy) while enforcing the same boundaries a microservices design would require.
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    Docker Compose                    │
-│                                                      │
-│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐  │
-│  │   api    │  │ scheduler│  │      worker       │  │
-│  │ :8000    │  │ (cron)   │  │  (job executor)   │  │
-│  └────┬─────┘  └────┬─────┘  └────────┬──────────┘  │
-│       │             │                 │              │
-│       └─────────────┴─────────────────┘              │
-│                       │                              │
-│               ┌───────┴──────┐                       │
-│               │  PostgreSQL  │                       │
-│               │  :5432       │                       │
-│               └──────────────┘                       │
-└─────────────────────────────────────────────────────┘
-```
+## Quick map
 
-All three application containers are built from the same `./backend` image — they differ only in their startup command.
+| Diagram | What it shows |
+|---|---|
+| [System Context](architecture/system-context.md) | What Stocklens is, who uses it, and which external services it depends on (C4 Level 1) |
+| [Containers](architecture/containers.md) | Deployable units (API, scheduler, worker, database) and how they communicate (C4 Level 2) |
+| [Module Boundaries](architecture/modules.md) | Internal modules within the backend, dependency rules, and Clean Architecture layers (C4 Level 3) |
+| [Data Model](architecture/data-model.md) | ER diagram for all database tables with column-level detail |
+| [Key Flows](architecture/sequences.md) | Sequence diagrams for EOD ingest, price history query, and health check |
 
-## Internal modules
+## Dependency rule
+
+All modules follow **Clean Architecture** — dependencies point inward only:
 
 ```
-backend/app/
-├── api/            ← FastAPI routers and dependencies (HTTP boundary)
-├── ingestion/      ← Data fetching (yfinance client, US/FI ingest pipelines)
-├── normalization/  ← Transform raw data into storage-ready format
-├── storage/        ← Repository layer — all SQL lives here
-├── jobs/           ← Scheduler and worker entry points
-├── signals/        ← (Phase 2) Factor signal computation
-├── scoring/        ← (Phase 2) Composite score calculation
-├── ranking/        ← (Phase 2) Score materialisation and ranking
-├── alerts/         ← (Phase 3) Alert rule engine
-└── common/         ← Config, logging, shared types
+api/ ──────────────────────────────┐
+jobs/ ─────────────────────────────┤
+ingestion/ · normalization/ ───────┤  → storage/ → PostgreSQL
+signals/ · scoring/ · ranking/ ────┤
+alerts/ ───────────────────────────┘
+                         ↑
+                      common/
+                  (imported by all)
 ```
 
-### Dependency rule
+No module may import from `api/` or `jobs/`. All SQL lives exclusively in `storage/`. This is enforced by the architecture fitness function test at `tests/architecture/test_dependency_rules.py`.
 
-Modules follow Clean Architecture — **inner modules do not import outer ones**:
-
-```
-api → storage → (nothing)
-ingestion → storage, normalization
-signals → storage
-scoring → signals, storage
-ranking → scoring, storage
-alerts → ranking, storage
-jobs → ingestion, (Phase 2) signals, scoring, ranking
-```
-
-This is enforced automatically by the architecture fitness function test:
-`tests/architecture/test_dependency_rules.py`
-
-## Data flow
-
-```
-yfinance (external)
-      │
-      ▼
-ingestion/yfinance_client.py   ← async wrapper (thread pool)
-      │
-      ▼
-normalization/price.py         ← validate, filter bad rows
-      │
-      ▼
-storage/repository.py          ← upsert to daily_price
-      │                           save to raw_source_snapshot
-      ▼
-PostgreSQL
-      │
-      ▼
-api/routers/assets.py          ← serve via REST
-```
-
-## Key design decisions
+## Key decisions
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| Package manager | uv | Fast, reproducible, replaces pip+venv |
-| Web framework | FastAPI | Async, typed, auto-generates OpenAPI docs |
+| Architecture style | Modular monolith | Simpler ops, single transaction boundary, clear upgrade path |
+| Web framework | FastAPI | Async, typed, auto-generates OpenAPI |
 | Database driver | asyncpg | Fastest async PostgreSQL driver for Python |
-| Scheduler | APScheduler | Simple cron-style scheduling without a broker |
-| Data source | yfinance | Free EOD data for both US and Finnish markets |
-| Validation | Pydantic v2 | Runtime type safety on all settings and API responses |
+| Scheduler | APScheduler | Cron-style without a broker; upgrades to Redis/RQ when needed |
+| Data source | yfinance | Free EOD data covering both US and Helsinki exchange |
+| Validation | Pydantic v2 | Runtime type safety on settings and API responses |
+| Package manager | uv | Fast, reproducible, replaces pip+venv |
