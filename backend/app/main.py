@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 import asyncpg
 from fastapi import FastAPI
 
-from app.api.routers import assets, health
+from app.api.routers import assets, energy, health
 from app.common.config import settings
 from app.common.logging import configure_logging
 
@@ -27,14 +27,15 @@ def create_app() -> FastAPI:
     configure_logging()
 
     app = FastAPI(
-        title="Stocklens",
-        description="Stock following and screening system for US and Finnish markets.",
+        title="Pulse",
+        description="White-label screener platform — electricity prices, stocks, and crypto.",
         version="0.1.0",
         lifespan=lifespan,
     )
 
     app.include_router(health.router)
     app.include_router(assets.router)
+    app.include_router(energy.router)
 
     return app
 

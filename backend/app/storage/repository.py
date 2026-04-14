@@ -169,6 +169,39 @@ async def save_energy_alerts(conn: AnyConn, alerts: list[dict[str, Any]]) -> int
     return len(alerts)
 
 
+async def get_energy_prices(
+    conn: AnyConn, region_code: str, price_date: date
+) -> list[dict[str, Any]]:
+    """Return 24 hourly price rows for a region and date, ordered by hour."""
+    rows = await conn.fetch(
+        """
+        SELECT hour, price_eur_mwh, spot_c_kwh, total_c_kwh
+          FROM energy_price
+         WHERE region_code = $1 AND price_date = $2
+         ORDER BY hour
+        """,
+        region_code,
+        price_date,
+    )
+    return [dict(row) for row in rows]
+
+
+async def get_energy_alerts(conn: AnyConn, region_code: str) -> list[dict[str, Any]]:
+    """Return all fired alerts for a region, newest first."""
+    rows = await conn.fetch(
+        """
+        SELECT ea.id, ea.price_date, ea.peak_c_kwh, ea.peak_hour,
+               ea.threshold_c_kwh, ea.fired_at
+          FROM energy_alert ea
+          JOIN energy_alert_rule ear ON ear.id = ea.rule_id
+         WHERE ea.region_code = $1
+         ORDER BY ea.fired_at DESC
+        """,
+        region_code,
+    )
+    return [dict(row) for row in rows]
+
+
 async def upsert_energy_prices(conn: AnyConn, prices: list[dict[str, Any]]) -> int:
     """Upsert a batch of hourly energy price rows. Returns the number of rows processed."""
     if not prices:
