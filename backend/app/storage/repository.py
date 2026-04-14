@@ -134,6 +134,41 @@ async def get_active_energy_regions(conn: AnyConn) -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
 
 
+async def get_active_alert_rules(conn: AnyConn, region_code: str) -> list[dict[str, Any]]:
+    """Return active alert rules for a given energy region."""
+    rows = await conn.fetch(
+        "SELECT id, region_code, threshold_c_kwh, active FROM energy_alert_rule WHERE region_code = $1 AND active = TRUE",
+        region_code,
+    )
+    return [dict(row) for row in rows]
+
+
+async def save_energy_alerts(conn: AnyConn, alerts: list[dict[str, Any]]) -> int:
+    """Upsert fired alert events. Returns number of rows processed."""
+    if not alerts:
+        return 0
+    await conn.executemany(
+        """
+        INSERT INTO energy_alert
+               (rule_id, region_code, price_date, peak_c_kwh, peak_hour, threshold_c_kwh)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT (rule_id, price_date) DO NOTHING
+        """,
+        [
+            (
+                a["rule_id"],
+                a["region_code"],
+                a["price_date"],
+                a["peak_c_kwh"],
+                a["peak_hour"],
+                a["threshold_c_kwh"],
+            )
+            for a in alerts
+        ],
+    )
+    return len(alerts)
+
+
 async def upsert_energy_prices(conn: AnyConn, prices: list[dict[str, Any]]) -> int:
     """Upsert a batch of hourly energy price rows. Returns the number of rows processed."""
     if not prices:
