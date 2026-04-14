@@ -46,11 +46,4 @@ COMMENT ON COLUMN energy_alert.peak_c_kwh   IS 'Actual peak price that triggered
 COMMENT ON COLUMN energy_alert.peak_hour    IS 'Hour of the peak price (0-23 local delivery time).';
 
 
--- ─────────────────────────────────────────────────────────────────────────────
--- Default alert rule: FI region, 30 c/kWh threshold
--- ─────────────────────────────────────────────────────────────────────────────
-INSERT INTO energy_alert_rule (region_code, threshold_c_kwh)
-VALUES ('FI', 30.00)
-ON CONFLICT DO NOTHING;
-
 COMMIT;
