@@ -349,5 +349,57 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 
 **Review trigger**: App store public release (task 4.8 gate). Legal review of all data source ToS, MiFID II framing, and GDPR compliance is mandatory before any public store listing. Personal use via TestFlight/sideload does not require this review.
 
+### RISK-013: Dependency manifest drift between pyproject.toml and backend/requirements.txt
+
+| Field | Value |
+|---|---|
+| Category | Technical / Operational |
+| Likelihood | 4 |
+| Impact | 3 |
+| Score | 12 |
+| Level | High |
+| Status | Open |
+| Owner | devops, engineer |
+
+**Description**: Two parallel sources of truth declare runtime dependencies: `pyproject.toml` (with `uv.lock`, used by CI and local dev) and `backend/requirements.txt` (used by the Dockerfile). They have already drifted — `httpx` was added to `pyproject.toml` but missing from `requirements.txt`, breaking the Docker images at runtime even though CI was green.
+
+**Consequences**: A dep added or upgraded in one file silently fails to propagate to the other. CI passes but production/staging containers crash at import time. Vulnerability fixes (e.g. `lxml>=6.1.0`) may apply only to one environment.
+
+**Mitigation**:
+- Switch `backend/Dockerfile` to install from `pyproject.toml` + `uv.lock` (e.g. `uv sync --frozen --no-dev`) and delete `backend/requirements.txt`
+- OR: generate `requirements.txt` from the lockfile at build time and treat it as derived (gitignored or CI-checked)
+- Until then: any change to runtime deps must touch both files in the same PR; reviewer to enforce
+
+**Contingency**: When the next drift is detected, follow the chosen unification path immediately rather than patching both files manually again.
+
+**Review trigger**: Any production import-time error attributable to a missing dep, or any PR touching only one of the two files.
+
+---
+
+### RISK-014: Nordpool public API now requires authentication
+
+| Field | Value |
+|---|---|
+| Category | Technical / Domain |
+| Likelihood | 5 |
+| Impact | 4 |
+| Score | 20 |
+| Level | Critical |
+| Status | Open |
+| Owner | architect, engineer |
+
+**Description**: `dataportal-api.nordpoolgroup.com/api/DayAheadPrices` now returns HTTP 401 for historical dates and empty 200 responses for current dates without authentication. The unauthenticated public endpoint that the energy ingest was built against is no longer viable. Verified 2026-04-26.
+
+**Consequences**: Phase 2 electricity ingest produces zero rows. All `energy_price` data is stale or absent. Threshold alerts cannot fire. Grafana energy dashboard shows no data. Blocks Phase 7.1 (electricity App Store release).
+
+**Mitigation options** (need decision):
+1. **ENTSO-E Transparency Platform** — free, requires registration + token, EU-wide coverage. Different schema; new client + normalisation needed.
+2. **Authenticate against Nordpool** — investigate whether they offer a free tier with API key registration; check current ToS.
+3. **elprisetjustnu.se / similar free aggregator APIs** — country-specific, lighter coverage, easier integration.
+
+**Contingency**: For demo/dev, seed synthetic data via a one-off script (already done locally). For production, no fallback exists until one of the above is implemented.
+
+**Review trigger**: Immediate — pick a replacement provider and create implementation task before Phase 2 DoD can be claimed complete.
+
 ---
 *Add new risks as they are identified. Re-score existing risks at each phase boundary.*
