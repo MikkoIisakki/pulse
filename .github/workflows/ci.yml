@@ -54,7 +54,9 @@ jobs:
         run: uv run radon cc backend/app -n C --show-complexity
 
       - name: Dependency vulnerability audit
-        run: uv run pip-audit
+        # GHSA-58qw-9mgm-455v: pip 26.0.1, no fix version published yet (2026-04-27).
+        # Re-evaluate when a patched pip ships.
+        run: uv run pip-audit --ignore-vuln GHSA-58qw-9mgm-455v
 
       - name: License audit
         run: uv run pip-licenses --order=license --fail-on="GNU General Public License v2 (GPLv2);GNU General Public License v3 (GPLv3);GNU Affero General Public License v3 (AGPLv3);Server Side Public License"
