@@ -21,7 +21,14 @@ FORBIDDEN_IMPORTS: dict[str, list[str]] = {
     "alerts": ["app.api", "app.jobs"],
     "normalization": ["app.storage", "app.signals", "app.scoring", "app.ranking", "app.alerts"],
     "ingestion": ["app.signals", "app.scoring", "app.ranking", "app.alerts", "app.api"],
-    "storage": ["app.signals", "app.scoring", "app.ranking", "app.alerts", "app.api", "app.ingestion"],
+    "storage": [
+        "app.signals",
+        "app.scoring",
+        "app.ranking",
+        "app.alerts",
+        "app.api",
+        "app.ingestion",
+    ],
 }
 
 
@@ -36,9 +43,8 @@ def get_imports(filepath: Path) -> list[str]:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 imports.append(alias.name)
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                imports.append(node.module)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imports.append(node.module)
     return imports
 
 
@@ -60,7 +66,6 @@ def test_no_forbidden_imports() -> None:
                             f"{rel}: imports '{imp}' (forbidden for module '{module}')"
                         )
 
-    assert not violations, (
-        "Architecture boundary violations detected:\n"
-        + "\n".join(f"  - {v}" for v in violations)
+    assert not violations, "Architecture boundary violations detected:\n" + "\n".join(
+        f"  - {v}" for v in violations
     )

@@ -4,6 +4,7 @@ All values come from environment variables. No scattered os.environ.get() calls
 anywhere else in the codebase. Import Settings and use it.
 """
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,12 @@ class Settings(BaseSettings):
 
     # Ingest staleness threshold — health check returns degraded if exceeded
     max_ingest_age_hours: int = 25
+
+    # ENTSO-E Transparency Platform — day-ahead electricity prices.
+    # Register at https://transparency.entsoe.eu (Settings → Web API Security Token).
+    # Empty string means "not configured" — energy ingest will fail with a clear
+    # error rather than crashing the whole app at import time.
+    entsoe_api_token: SecretStr = SecretStr("")
 
 
 settings = Settings()
