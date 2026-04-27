@@ -34,7 +34,7 @@ Goal: reliable daily data ingestion, storage with full audit trail, queryable vi
 | # | Task | Status | Notes |
 |---|---|---|---|
 | 2.1 | DB schema — electricity tables | ✅ Done | `energy_price` (hourly), `energy_region`, extend `ingest_run`; seeds for 6 Nordpool regions |
-| 2.2 | Nordpool/ENTSO-E ingest | ✅ Done | Nordpool public API; `nordpool_client.py`, `energy_ingest.py`; 13 unit tests |
+| 2.2 | Nordpool/ENTSO-E ingest | ✅ Done | ENTSO-E Transparency Platform (A44 day-ahead); `entsoe_client.py`, `energy_ingest.py`. Migrated from Nordpool 2026-04 — see ADR-004 / RISK-014 |
 | 2.3 | Price normalisation (VAT, currency) | ✅ Done | `normalization/energy_price.py`; spot_c_kwh + total_c_kwh with VAT+tax |
 | 2.4 | Daily price scheduler | ✅ Done | `run_energy_job` at 11:30 UTC (13:30 CET) added to APScheduler |
 | 2.5 | Threshold alert rules | ✅ Done | `alerts/energy.py`; `energy_alert_rule` + `energy_alert` tables; evaluated in job after ingest |

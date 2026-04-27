@@ -385,21 +385,25 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 | Impact | 4 |
 | Score | 20 |
 | Level | Critical |
-| Status | Open |
+| Status | Mitigated (2026-04-27) |
 | Owner | architect, engineer |
 
 **Description**: `dataportal-api.nordpoolgroup.com/api/DayAheadPrices` now returns HTTP 401 for historical dates and empty 200 responses for current dates without authentication. The unauthenticated public endpoint that the energy ingest was built against is no longer viable. Verified 2026-04-26.
 
 **Consequences**: Phase 2 electricity ingest produces zero rows. All `energy_price` data is stale or absent. Threshold alerts cannot fire. Grafana energy dashboard shows no data. Blocks Phase 7.1 (electricity App Store release).
 
-**Mitigation options** (need decision):
-1. **ENTSO-E Transparency Platform** — free, requires registration + token, EU-wide coverage. Different schema; new client + normalisation needed.
-2. **Authenticate against Nordpool** — investigate whether they offer a free tier with API key registration; check current ToS.
-3. **elprisetjustnu.se / similar free aggregator APIs** — country-specific, lighter coverage, easier integration.
+**Resolution (2026-04-27, ADR-004)**: Replaced Nordpool with the ENTSO-E
+Transparency Platform (`web-api.tp.entsoe.eu/api`, `documentType=A44`). New
+`app.ingestion.entsoe_client.fetch_day_ahead` returns the same row shape the
+Nordpool client did so the existing normaliser is unchanged. Old
+`nordpool_client.py` deleted. Token is provisioned via `ENTSOE_API_TOKEN`
+(see `.env.example`); operator must register at transparency.entsoe.eu and
+add the token before the next scheduled ingest run. 10 unit tests cover
+query construction, XML parsing, 401, no-data, and DST 23/25-hour days.
 
-**Contingency**: For demo/dev, seed synthetic data via a one-off script (already done locally). For production, no fallback exists until one of the above is implemented.
-
-**Review trigger**: Immediate — pick a replacement provider and create implementation task before Phase 2 DoD can be claimed complete.
+**Review trigger**: Any future ENTSO-E auth/policy change; ingest_run failures
+attributable to ENTSO-E for > 2 days; or rollout of 15-minute settlement
+periods (would require resolution-aware Point parsing).
 
 ---
 *Add new risks as they are identified. Re-score existing risks at each phase boundary.*
