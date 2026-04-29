@@ -27,3 +27,4 @@ repos:
           - asyncpg-stubs
           - fastapi
           - httpx
+          - types-pyyaml

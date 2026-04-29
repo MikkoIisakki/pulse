@@ -1,0 +1,61 @@
+# Pulse Energy domain configuration.
+#
+# Single source of truth for domain-level metadata: branding, scheduler cron,
+# default alert thresholds, and the seeded bidding-zone list. Code reads this
+# file (via app.common.domain.load_domain_config) instead of duplicating the
+# values across Python, SQL seeds, and scheduler hardcodes.
+#
+# See ADR-006 for the schema and conventions.
+
+name: energy
+display_name: Pulse Energy
+description: Day-ahead electricity spot prices, threshold alerts, and cheap-interval recommendations.
+
+# Cron schedule for the daily ingest job (UTC). ENTSO-E publishes tomorrow's
+# day-ahead prices around 13:00 CET; we run at 13:30 CET = 11:30 UTC.
+schedule:
+  ingest_cron:
+    hour: 11
+    minute: 30
+    timezone: UTC
+  job_id: energy_price_ingest
+  job_name: ENTSO-E day-ahead price ingest
+
+# Bidding zones we ingest. Mirrors db/seeds/002_energy_regions.sql; the seed
+# is generated/cross-checked from this list (CI fitness function recommended).
+regions:
+  - code: FI
+    name: Finland
+    country: FI
+    vat_rate: 0.2550
+    electricity_tax_c_kwh: 2.2400
+  - code: SE3
+    name: Sweden North
+    country: SE
+    vat_rate: 0.2500
+    electricity_tax_c_kwh: 0.0000
+  - code: SE4
+    name: Sweden South
+    country: SE
+    vat_rate: 0.2500
+    electricity_tax_c_kwh: 0.0000
+  - code: EE
+    name: Estonia
+    country: EE
+    vat_rate: 0.2200
+    electricity_tax_c_kwh: 0.0000
+  - code: LV
+    name: Latvia
+    country: LV
+    vat_rate: 0.2100
+    electricity_tax_c_kwh: 0.0000
+  - code: LT
+    name: Lithuania
+    country: LT
+    vat_rate: 0.2100
+    electricity_tax_c_kwh: 0.0000
+
+# Default alert rules per region (consumed by db/seeds/003_energy_alert_rules.sql
+# generation, and by the alert engine when no rule rows exist for a region).
+alert_thresholds_c_kwh:
+  FI: 30.00

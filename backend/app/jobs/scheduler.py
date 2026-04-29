@@ -18,6 +18,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from app.alerts.energy import check_threshold_alerts
+from app.common.domain import load_domain_config
 from app.common.logging import configure_logging
 from app.ingestion.energy_ingest import run_energy_ingest
 from app.ingestion.fi_ingest import run_fi_ingest
@@ -96,11 +97,16 @@ def build_scheduler() -> BlockingScheduler:
     """Construct and return a configured scheduler (not yet started)."""
     scheduler = BlockingScheduler(timezone="UTC")
 
+    energy_cfg = load_domain_config("energy")
     scheduler.add_job(
         run_energy_job,
-        trigger=CronTrigger(hour=11, minute=30, timezone="UTC"),
-        id="energy_price_ingest",
-        name="ENTSO-E day-ahead price ingest",
+        trigger=CronTrigger(
+            hour=energy_cfg.schedule.ingest_cron.hour,
+            minute=energy_cfg.schedule.ingest_cron.minute,
+            timezone=energy_cfg.schedule.ingest_cron.timezone,
+        ),
+        id=energy_cfg.schedule.job_id,
+        name=energy_cfg.schedule.job_name,
         misfire_grace_time=3600,
     )
 
