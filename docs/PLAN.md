@@ -33,23 +33,23 @@ Goal: reliable daily data ingestion, storage with full audit trail, queryable vi
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 2.1 | DB schema — electricity tables | ✅ Done | `energy_price` (hourly), `energy_region`, extend `ingest_run`; seeds for 6 Nordpool regions |
-| 2.2 | Nordpool/ENTSO-E ingest | ✅ Done | ENTSO-E Transparency Platform (A44 day-ahead); `entsoe_client.py`, `energy_ingest.py`. Migrated from Nordpool 2026-04 — see ADR-004 / RISK-014 |
+| 2.1 | DB schema — electricity tables | ✅ Done | `energy_price` (interval-keyed per ADR-005), `energy_region`, extend `ingest_run`; seeds for 6 ENTSO-E bidding zones |
+| 2.2 | Nordpool/ENTSO-E ingest | ✅ Done | ENTSO-E Transparency Platform (A44 day-ahead, PT15M/PT60M); `entsoe_client.py`, `energy_ingest.py`. Migrated from Nordpool 2026-04 — see ADR-004, ADR-005, RISK-014 |
 | 2.3 | Price normalisation (VAT, currency) | ✅ Done | `normalization/energy_price.py`; spot_c_kwh + total_c_kwh with VAT+tax |
 | 2.4 | Daily price scheduler | ✅ Done | `run_energy_job` at 11:30 UTC (13:30 CET) added to APScheduler |
 | 2.5 | Threshold alert rules | ✅ Done | `alerts/energy.py`; `energy_alert_rule` + `energy_alert` tables; evaluated in job after ingest |
-| 2.6 | REST API — electricity prices + alerts | ✅ Done | `GET /v1/energy/prices`, `GET /v1/energy/alerts` |
-| 2.7 | "Cheap hours" ranking | ✅ Done | `GET /v1/energy/cheap-hours` returns hours ranked ascending by total_c_kwh |
-| 2.8 | Grafana energy dashboard | ✅ Done | `grafana/dashboards/energy.json`: 24h prices, peak/off-peak stat, 30-day trend, cheapest-hour table; Postgres datasource provisioning + docker-compose service |
+| 2.6 | REST API — electricity prices + alerts | ✅ Done | `GET /v1/energy/prices`, `GET /v1/energy/alerts` (interval shape per ADR-005) |
+| 2.7 | "Cheap intervals" ranking | ✅ Done | `GET /v1/energy/cheap-intervals` returns intervals ranked ascending by total_c_kwh (renamed from cheap-hours in ADR-005) |
+| 2.8 | Grafana energy dashboard | ✅ Done | `grafana/dashboards/energy.json`: 24h prices, peak/off-peak stat, 30-day trend, cheapest-interval table; Postgres datasource provisioning + docker-compose service |
 | 2.9 | Health check extension | ⬜ Todo | Energy ingest staleness (>25h) reflected in `/v1/health/ready` |
 
 ### Phase 2 Definition of Done
 
-- [ ] Tomorrow's hourly prices ingested daily by 14:00 CET
+- [ ] Tomorrow's interval prices ingested daily by 14:00 CET (PT15M or PT60M depending on zone)
 - [ ] Prices stored in EUR/MWh and c/kWh (incl. VAT)
 - [ ] Alert fires when peak price exceeds configured threshold
-- [ ] `GET /v1/energy/prices?date=today|tomorrow` returns correct hourly data
-- [ ] Grafana dashboard shows 24h price chart and cheap-hour ranking
+- [ ] `GET /v1/energy/prices?date=today|tomorrow` returns correct interval data with `interval_minutes`
+- [ ] Grafana dashboard shows 24h price chart and cheap-interval ranking
 - [ ] CI passes, coverage ≥ 70%
 
 ---

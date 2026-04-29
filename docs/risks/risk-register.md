@@ -393,17 +393,20 @@ Score = Likelihood (1–5) × Impact (1–5). High ≥ 10, Critical ≥ 17.
 **Consequences**: Phase 2 electricity ingest produces zero rows. All `energy_price` data is stale or absent. Threshold alerts cannot fire. Grafana energy dashboard shows no data. Blocks Phase 7.1 (electricity App Store release).
 
 **Resolution (2026-04-27, ADR-004)**: Replaced Nordpool with the ENTSO-E
-Transparency Platform (`web-api.tp.entsoe.eu/api`, `documentType=A44`). New
-`app.ingestion.entsoe_client.fetch_day_ahead` returns the same row shape the
-Nordpool client did so the existing normaliser is unchanged. Old
-`nordpool_client.py` deleted. Token is provisioned via `ENTSOE_API_TOKEN`
-(see `.env.example`); operator must register at transparency.entsoe.eu and
-add the token before the next scheduled ingest run. 10 unit tests cover
-query construction, XML parsing, 401, no-data, and DST 23/25-hour days.
+Transparency Platform (`web-api.tp.entsoe.eu/api`, `documentType=A44`). Token
+is provisioned via `ENTSOE_API_TOKEN` (see `.env.example`); operator must
+register at transparency.entsoe.eu and add the token before the next
+scheduled ingest run.
 
-**Review trigger**: Any future ENTSO-E auth/policy change; ingest_run failures
-attributable to ENTSO-E for > 2 days; or rollout of 15-minute settlement
-periods (would require resolution-aware Point parsing).
+**Update (2026-04-29, ADR-005)**: ENTSO-E rolled out PT15M (15-minute)
+settlement for the Nordic/Baltic zones. The energy schema and API contract
+were generalised to interval-based time series (`interval_start`,
+`interval_end`, `interval_minutes`) so per-row resolution is preserved
+end-to-end. The PT15M caveat below is fully resolved. Live ingest verified
+2026-04-29 (574 rows across 6 zones, mixed PT15M/PT60M).
+
+**Review trigger**: Any future ENTSO-E auth/policy change, or `ingest_run`
+failures attributable to ENTSO-E for more than 2 days.
 
 ---
 *Add new risks as they are identified. Re-score existing risks at each phase boundary.*
