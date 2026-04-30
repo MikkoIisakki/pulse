@@ -24,7 +24,25 @@ make migrate                  # apply DB migrations
 make seed                     # load seed data
 ```
 
-`GET http://localhost:8000/v1/health/ready` — confirm the system is running.
+`GET http://localhost:8000/v1/health/ready` — confirm the system is running (no auth).
+
+## API authentication
+
+Domain endpoints (`/v1/energy/*`, `/v1/assets/*`) require an API key:
+
+```bash
+curl -H "Authorization: Bearer pulse_<your-key>" http://localhost:8000/v1/energy/prices?region=FI&date=today
+```
+
+For local dev, set `MASTER_API_KEY=pulse_dev` in `.env` and use that. For
+production keys, issue them via:
+
+```bash
+docker compose exec api python -m app.tools.create_api_key --name pulse-mobile-prod
+```
+
+The raw key is printed once; only its SHA-256 hash is stored. To revoke,
+set `revoked_at` on the row in `api_key`. See ADR-007.
 
 ## Development
 

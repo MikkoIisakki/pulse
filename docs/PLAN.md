@@ -62,7 +62,7 @@ Goal: reliable daily data ingestion, storage with full audit trail, queryable vi
 |---|---|---|---|
 | 3.1 | Domain config system | ✅ Done | `config/domains/energy.yaml` + typed loader `app.common.domain.load_domain_config`. Scheduler reads cron from config. Stocks/crypto YAMLs land with their phases. See ADR-006. |
 | 3.2 | Expo white-label mobile app shell | ⬜ Todo | One codebase, one `app.json` per domain via EAS build profiles |
-| 3.3 | Auth layer (JWT / API key) | ⬜ Todo | Prerequisite for mobile; shared across all domain apps |
+| 3.3 | Auth layer (JWT / API key) | ✅ Done | API key (SHA-256 hashed) on `/v1/energy/*` and `/v1/assets/*`; `/v1/health/*` open. CLI: `python -m app.tools.create_api_key`. JWT-for-users deferred until per-user state exists. See ADR-007. |
 | 3.4 | Push notification infrastructure | ⬜ Todo | FCM/APNs + device registration endpoint |
 | 3.5 | Next.js white-label web shell | ⬜ Todo | Domain-configured via env var; one build per domain |
 | 3.6 | EAS build pipeline (GHA) | ⬜ Todo | `eas build --profile energy` etc.; devops owns workflow |
